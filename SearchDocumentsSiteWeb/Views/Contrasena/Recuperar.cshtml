@@ -1,0 +1,91 @@
+﻿
+@{
+    ViewBag.Title = "Recuperar Contraseña";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sistema Gestión de Documentos</title>
+    <script type="text/javascript">
+         var BASE_APP_URL = '@Url.Content("~")';
+    </script>
+    @System.Web.Optimization.Scripts.Render("~/bundles/jquery")
+    <script src="~/Scripts/bootstrap.js"></script>
+    @System.Web.Optimization.Scripts.Render("~/bundles/Scripts/layout")
+    <script src="~/Scripts/bootbox.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/layout/jquery.backstretch.min.js"></script>
+    <script src="~/Scripts/layout/select2.min.js"></script>
+    <script src="~/Scripts/Documentos/Login/Login.js"></script>
+    <!-- Bootstrap -->
+    <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="../vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="../vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- Animate.css -->
+    <link href="~/vendors/animate.css/animate.min.css" rel="stylesheet">
+    <!-- Custom Theme Style -->
+    <link href="../Content/css/custom.min.css" rel="stylesheet">
+    <link href="~/Content/estilos.css" rel="stylesheet" />
+    <script src="~/Scripts/Documentos/Contrasena/Recuperar.js"></script>
+</head>
+<body class="login">
+    <div class="logo">
+        <a href="#" assets="" admin="" layout="" img="" alt="">
+        </a>
+    </div>
+
+    <div class="content">
+
+        <div id="ContenidoLogin" class="login_wrapper">
+            @Html.Hidden("LOGIN", ViewData["LOGIN"])
+            @model SearchDocuments.Entidades.UsuarioEL
+            @using (Html.BeginForm("RecuperarClave", "Contrasena", FormMethod.Get, new { id = "frmCrear", name = "frmCrear", @class = "login-form" }))
+            {
+                <div class="animate form login_form">
+                    <section class="login_content">
+                        <form>
+                            <h2><i class="fa fa-archive"></i>Gestor de Documentos</h2>
+                            <label class="form-group">
+                                Recuperación de Contraseña
+                            </label>
+                            <div class="form-group">
+                                @Html.TextBoxFor(model => model.EMAIL, new { @class = "form-control placeholder-no-fix", Id = "htxtCorreo", placeholder = "Ingrese su Correo asociado a su usuario", maxlength = "100" })
+                                @Html.ValidationMessageFor(model => model.EMAIL)
+                            </div>
+                            <div class="form-group">
+                                <center>
+                                    <button id="hbtnGuardar" type="button" class="btn btn-danger">Recuperar</button>
+                                    <button id="hbtnCancelar" type="button" class="btn default">Regresar</button>
+                                </center>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="separator">
+                                <div class="clearfix"></div>
+                                <br />
+                                <div>
+                                    <p>
+                                        @{ var periodo = DateTime.Now.Year.ToString(); } @string.Format("{0}", periodo) © Todos los Derechos Reservados.
+                                    </p>
+                                </div>
+                            </div>
+                        </form>
+                    </section>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="modal"></div>
+
+</body>
+</html>
+

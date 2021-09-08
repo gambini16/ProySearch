@@ -1,0 +1,54 @@
+﻿<div class="left_col scroll-view">
+    <div class="navbar nav_title profile_pic" style="border: 0;">
+        <a class="site_title"><span>Gestor Documentos</span></a>
+    </div>
+    <div class="clearfix"></div>
+    <!-- menu profile quick info -->
+    <div class="profile clearfix">
+        <div class="profile_pic">
+            <img src="@ViewData["urlUsuarioFoto"]" alt="..." class="img-circle profile_img">
+        </div>
+        <div class="profile_info">
+            <span>Hola,</span>
+            <h2>@ViewData["LOGUEO_NOMBRE_COMPLETO"]</h2>
+        </div>
+    </div>
+    <!-- /menu profile quick info -->
+    <br />
+    <!-- sidebar menu -->
+    <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+        <div class="menu_section">
+
+            <ul class="nav side-menu">
+                @*style="background-color:deepskyblue"*@
+                <li id="li_2">
+                    <a href="javascript:;">
+                        <i class="fa fa-expeditedssl"></i> Seguridad <span class="fa fa-chevron-down"></span>
+                    </a>
+                    <ul class="nav child_menu" id="ul_2">
+                        <li id="MANT_USUARIO"><a href="@Url.Action("Index","Usuario")">Usuarios</a></li>
+                        <li id="MANT_PERFIL"><a href="@Url.Action("Index","Perfil")">Perfiles</a></li>
+                        <li id="MANT_MODULO"><a href="@Url.Action("Index","Modulo")">Módulos</a></li>
+                        <li id="MANT_MODULO_OPCION"><a href="@Url.Action("IndexModulo","Perfil")">Módulos por Perfil</a></li>
+                    </ul>
+                </li>
+
+                @*style="background-color:mediumvioletred"*@
+                <li id="li_4">
+                    <a href="javascript:;">
+                        <i class="fa fa-search"></i> Búsqueda <span class="fa fa-chevron-down"></span>
+                    </a>
+                    <ul class="nav child_menu" id="ul_4">
+                        <li id="CONSULTA_DOCUMENTO"><a href="@Url.Action("Index","Documento")">Consulta Documento</a></li>
+                        <li id="MANT_PLANT_PERFIL"><a href="@Url.Action("IndexPlantillaPerfil","Perfil")">Plantillas por Perfil</a></li>
+                        <li id="IMPORTAR_DOCUMENTO"><a href="@Url.Action("Index","ImportarDocumento")">Importar Documento</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+    <!-- /sidebar menu -->
+</div>
+<!--<script src="~/build/js/custom.js"></script>  -->
+<!--<script src="~/Scripts/Documentos/OpcionesPerfil.js"></script> -->

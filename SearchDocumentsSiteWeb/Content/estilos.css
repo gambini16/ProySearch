@@ -1,0 +1,42 @@
+﻿.field-validation-error {
+    color: #f00;
+}
+.modal-backdrop2
+{
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1040;
+    background-color: #808080;
+    opacity: 0.4;
+    filter: alpha(opacity=0.8);
+}
+.modal2
+{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 1050;
+    overflow: auto;
+    /* this width is your loading img's width */
+    width: 100px;
+    /* please change the margin-top and margin-left here 
+     * make sure the margin-top equals 1/2 loading img's height 
+     * and the margin-left equals 1/2 loading img's width */
+    margin: -15px 0 0 -15px; 
+}
+.hide_column_dataTable{
+    display : none;
+}
+.IDAPP{
+    display : none;
+}
+.IDPER{
+    display : none;
+}
+.EST{
+    display : none;
+}
+.hover { background-color:yellow; }

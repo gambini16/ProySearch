@@ -1,0 +1,115 @@
+﻿@model SearchDocuments.Entidades.UsuarioEL
+@{
+    ViewBag.Title = "Cambiar Contraseña";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/Documentos/Contrasena/Editar.js"></script>
+@Html.Hidden("hhdnOpcionesAcceso", ViewData["OPCIONES_USUARIO"])
+<br />
+<br />
+
+<div class="page-title">
+    <div class="title_left">
+        <h3>Cambiar Contraseña</h3>
+    </div>
+    <div class="title_right">
+        <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+            <div class="input-group">
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="clearfix"></div>
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title" style="font-size:14px">
+                <i><img src="~/Content/images/nuevo.png" alt="" height="19" width="19" /></i>Cambiar Contraseña
+
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <br />
+                @using (Html.BeginForm("Actualizar", "Contrasena", FormMethod.Post, new { id = "frmCrear", name = "frmCrear", @class = "form-horizontal" }))
+                {
+
+
+                    <div class="form-group">
+                        <label class="control-label col-md-4 col-sm-4 col-xs-12" for="currency_name">
+
+                            @Html.HiddenFor(model => model.USUARIO_ID)
+
+                            @Html.Label("Datos del usuario:")
+                        </label>
+                        <div class="form-group col-md-4 col-sm-4 col-xs-12">
+
+                            @Html.TextBoxFor(model => model.NOMBRE_COMPLETO, new { @class = "form-control", Id = "htxtLogin", maxlength = "20", disabled = "disabled" })
+                            @Html.ValidationMessageFor(model => model.NOMBRE_COMPLETO)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-4 col-sm-4 col-xs-12" for="currency_name">
+                            @Html.Label("Usuario:")
+                        </label>
+                        <div class="form-group col-md-4 col-sm-4 col-xs-12">
+
+                            @Html.TextBoxFor(model => model.LOGIN, new { @class = "form-control", Id = "txtLOGIN_USUARIO", maxlength = "50", disabled = "disabled" })
+                            @Html.ValidationMessageFor(model => model.LOGIN)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-4 col-sm-4 col-xs-12" for="currency_name">
+                            @Html.Label("Email:")
+                        </label>
+                        <div class="form-group col-md-4 col-sm-4 col-xs-12">
+
+                            @Html.TextBoxFor(model => model.EMAIL, new { @class = "form-control", Id = "htxtLogin", maxlength = "20", disabled = "disabled" })
+                            @Html.ValidationMessageFor(model => model.EMAIL)
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-4 col-sm-4 col-xs-12" for="currency_name">
+                            @Html.Label("Contraseña anterior:") <span class="required">*</span>
+                        </label>
+                        <div class="col-md-4 col-sm-4 col-xs-12">
+                            @Html.PasswordFor(model => model.CLAVE_OLD, new { @class = "form-control col-md-7 col-xs-12", Id = "htxtContrasenaOld", maxlength = "30" })
+                            @Html.ValidationMessageFor(model => model.CLAVE_OLD)
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="control-label col-md-4 col-sm-4 col-xs-12" for="currency_name">
+                            @Html.LabelFor(m => m.CLAVE) <span class="required">*</span>
+                        </label>
+                        <div class="col-md-4 col-sm-4 col-xs-12">
+                            @Html.PasswordFor(model => model.CLAVE, new { @class = "form-control col-md-7 col-xs-12", Id = "htxtContrasena", maxlength = "30" })
+                            @Html.ValidationMessageFor(model => model.CLAVE)
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-4 col-sm-4 col-xs-12" for="currency_name">
+                            @Html.LabelFor(m => m.VALIDAR_CONTRASENA) <span class="required">*</span>
+                        </label>
+                        <div class="col-md-4 col-sm-4 col-xs-12">
+                            @Html.PasswordFor(model => model.VALIDAR_CONTRASENA, new { @class = "form-control col-md-7 col-xs-12", Id = "htxtValidacionContrasena", maxlength = "30" })
+                            @Html.ValidationMessageFor(model => model.VALIDAR_CONTRASENA)
+                        </div>
+                    </div>
+
+                    <div class="ln_solid"></div>
+                    <div class="form-group">
+                        <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-5">
+                            <button id="hbtnGuardar" type="submit" class="btn btn-success">Guardar</button>
+                            <button id="btnCancelar" class="btn btn-primary" type="button">Cancelar</button>
+                        </div>
+                    </div>
+                }
+            </div>
+                </div>
+    </div>
+</div>
+

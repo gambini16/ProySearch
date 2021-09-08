@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.1321
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchDocuments.Datos", "..\SearchDocuments.Datos\SearchDocuments.Datos.csproj", "{B1EF5BEF-3E7B-4BB6-84BE-F0F640CE6FD4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchDocuments.Entidades", "..\SearchDocuments.Entidades\SearchDocuments.Entidades.csproj", "{72DDFA1C-A767-46FD-984E-ADA3FDB7CC74}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchDocuments.Negocio", "..\SearchDocuments.Negocio\SearchDocuments.Negocio.csproj", "{313E3CAB-7F82-425A-864A-BA76C9AE7D26}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchDocumentsSiteWeb", "SearchDocumentsSiteWeb\SearchDocumentsSiteWeb.csproj", "{44767B27-9085-4777-94CA-C62C87AC118C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchDocuments.Criptografia", "SearchDocuments.Criptografia\SearchDocuments.Criptografia.csproj", "{9D4A3CC8-4ACC-4134-B436-AA919B364AFD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchDocuments.Comunes", "SearchDocuments.Comunes\SearchDocuments.Comunes.csproj", "{0123C96F-1AEF-4AEF-B0C5-EF5C0C1D1E8A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B1EF5BEF-3E7B-4BB6-84BE-F0F640CE6FD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1EF5BEF-3E7B-4BB6-84BE-F0F640CE6FD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1EF5BEF-3E7B-4BB6-84BE-F0F640CE6FD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1EF5BEF-3E7B-4BB6-84BE-F0F640CE6FD4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72DDFA1C-A767-46FD-984E-ADA3FDB7CC74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72DDFA1C-A767-46FD-984E-ADA3FDB7CC74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72DDFA1C-A767-46FD-984E-ADA3FDB7CC74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72DDFA1C-A767-46FD-984E-ADA3FDB7CC74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{313E3CAB-7F82-425A-864A-BA76C9AE7D26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{313E3CAB-7F82-425A-864A-BA76C9AE7D26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{313E3CAB-7F82-425A-864A-BA76C9AE7D26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{313E3CAB-7F82-425A-864A-BA76C9AE7D26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44767B27-9085-4777-94CA-C62C87AC118C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44767B27-9085-4777-94CA-C62C87AC118C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44767B27-9085-4777-94CA-C62C87AC118C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44767B27-9085-4777-94CA-C62C87AC118C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D4A3CC8-4ACC-4134-B436-AA919B364AFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D4A3CC8-4ACC-4134-B436-AA919B364AFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D4A3CC8-4ACC-4134-B436-AA919B364AFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D4A3CC8-4ACC-4134-B436-AA919B364AFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0123C96F-1AEF-4AEF-B0C5-EF5C0C1D1E8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0123C96F-1AEF-4AEF-B0C5-EF5C0C1D1E8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0123C96F-1AEF-4AEF-B0C5-EF5C0C1D1E8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0123C96F-1AEF-4AEF-B0C5-EF5C0C1D1E8A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F86A0D15-A5D8-4A55-B656-50D977BD4010}
+	EndGlobalSection
+EndGlobal

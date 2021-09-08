@@ -1,0 +1,86 @@
+﻿@model SearchDocuments.Entidades.ModuloEL
+@{
+    ViewBag.Title = "Crear Módulo";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/Documentos/Modulo/Crear.js"></script>
+@Html.Hidden("hhdnOpcionesAcceso", ViewData["OPCIONES_USUARIO"])
+<br />
+<br />
+
+<div class="page-title">
+    <div class="title_left">
+        <h3>Crear Módulo</h3>
+    </div>
+    <div class="title_right">
+        <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+            <div class="input-group">
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="clearfix"></div>
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title" style="font-size:14px">
+                <i><img src="~/Content/images/nuevo.png" alt="" height="19" width="19" /></i>Crear Registro
+
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <br />
+                @using (Html.BeginForm("Guardar", "Modulo", FormMethod.Post, new { id = "frmCrear", name = "frmCrear", @class = "form-horizontal" }))
+                {
+                    <div class="form-row">
+                        <div class="form-group col-md-2 col-sm-2 col-xs-12">
+                        </div>
+                        <div class="form-group col-md-4 col-sm-4 col-xs-12">
+                            <label>
+                                @Html.LabelFor(m => m.MODULO_NOMBRE) <span class="required">*</span>
+                            </label>
+                            @Html.TextBoxFor(model => model.MODULO_NOMBRE, new { @class = "form-control col-md-7 col-xs-12", Id = "htxtNombreModulo", onkeypress = "return soloLetrasyNumeros(event)" })
+                            @Html.ValidationMessageFor(model => model.MODULO_NOMBRE)
+                        </div>
+                        <div class="form-group col-md-4 col-sm-4 col-xs-12">
+                            <label>
+                                @Html.LabelFor(m => m.SIGLA) <span class="required">*</span>
+                            </label>
+                            @Html.TextBoxFor(model => model.SIGLA, new { @class = "form-control col-md-7 col-xs-12", Id = "htxtSigla" })
+                            @Html.ValidationMessageFor(model => model.SIGLA)
+                        </div>
+                        <div class="form-group col-md-2 col-sm-2 col-xs-12">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-2 col-sm-2 col-xs-12">
+                        </div>
+                        <div class="form-group col-md-4 col-sm-4 col-xs-12">
+                            <label>
+                                @Html.LabelFor(m => m.ESTADO)
+                            </label>
+                            @Html.DropDownListFor(model => model.ESTADO, (SelectList)ViewBag.EstadoModulo, new { @class = "form-control", Id = "hddlEstado" })
+                            @Html.ValidationMessageFor(model => model.ESTADO)
+                        </div>
+                    </div>
+
+                    <div class="row"></div>
+
+                    <div class="ln_solid"></div>
+                    <div class="form-group">
+                        <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-5">
+                            <button id="hbtnGuardar" type="submit" class="btn btn-success">Guardar</button>
+                            <button id="btnCancelar" class="btn btn-primary" type="button">Cerrar</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+

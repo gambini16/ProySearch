@@ -1,0 +1,170 @@
+﻿@model SearchDocuments.Entidades.UsuarioEL
+@{
+    ViewBag.Title = "Editar Usuario";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/Documentos/Usuario/Editar.js"></script>
+@Html.Hidden("hhdnOpcionesAcceso", ViewData["OPCIONES_USUARIO"])
+<br />
+<br />
+
+<div class="page-title">
+    <div class="title_left">
+        <h3>Editar Usuario</h3>
+    </div>
+    <div class="title_right">
+        <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+            <div class="input-group">
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="clearfix"></div>
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title" style="font-size:14px">
+                <i><img src="~/Content/images/edit.png" alt="" height="19" width="19" /></i>Editar Registro
+
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <br />
+
+                @using (Html.BeginForm("Actualizar", "Usuario", FormMethod.Post, new { id = "frmModificar", name = "frmModificar", @class = "form-horizontal" }))
+                {
+                    <div class="form-row">
+                        <div class="form-group col-md-2 col-sm-2 col-xs-12">
+                        </div>
+                        <div class="form-group col-md-4 col-sm-4 col-xs-12">
+                            <label>
+                                @Html.Label("Codigo Usuario") <span class="required">*</span>
+                            </label>
+                            @Html.TextBoxFor(model => model.USUARIO_ID, new { @class = "form-control", Id = "htxtIdUsuario", readOnly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.USUARIO_ID)
+                        </div>
+                        <div class="form-group col-md-4 col-sm-4 col-xs-12">
+
+                        </div>
+                        <div class="form-group col-md-2 col-sm-2 col-xs-12">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-2 col-sm-2 col-xs-12">
+                        </div>
+                        <div class="form-group col-md-4 col-sm-4 col-xs-12">
+                            <label>
+                                @Html.Label("Usuario") <span class="required">*</span>
+                            </label>
+                            @Html.TextBoxFor(model => model.LOGIN, new { @class = "form-control", Id = "htxtLogin", maxlength = "20", disabled = "disabled" })
+                            @Html.ValidationMessageFor(model => model.LOGIN)
+                        </div>
+                        <div class="form-group col-md-4 col-sm-4 col-xs-12">
+                            <label>
+                                @Html.Label("Apellidos") <span class="required">*</span>
+                            </label>
+                            @Html.TextBoxFor(model => model.APELLIDO_PATERNO, new { @class = "form-control", Id = "htxtApellidoPaterno", onkeypress = "return soloLetras(event)", maxlength = "40"})
+                            @Html.ValidationMessageFor(model => model.APELLIDO_PATERNO)
+                        </div>
+
+                        <div class="form-group col-md-2 col-sm-2 col-xs-12">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-2 col-sm-2 col-xs-12">
+                        </div>
+                        <div class="form-group col-md-4 col-sm-4 col-xs-12">
+                            <label>
+                                @Html.LabelFor(m => m.NOMBRES) <span class="required">*</span>
+                            </label>
+                            @Html.TextBoxFor(model => model.NOMBRES, new { @class = "form-control", Id = "htxtNombres", onkeypress = "return soloLetras(event)", maxlength = "25"})
+                            @Html.ValidationMessageFor(model => model.NOMBRES)
+                        </div>
+
+                        <div class="form-group col-md-4 col-sm-4 col-xs-12">
+                            <label>
+                                @Html.LabelFor(m => m.EMAIL) <span class="required">*</span>
+                            </label>
+                            @Html.TextBoxFor(model => model.EMAIL, new { @class = "form-control", Id = "htxtCorreoElectronico", style = "text-transform: lowercase", onkeypress = "return soloCorreo(event)", maxlength = "50"})
+                            @Html.ValidationMessageFor(model => model.EMAIL)
+                        </div>
+                        <div class="form-group col-md-2 col-sm-2 col-xs-12">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-2 col-sm-2 col-xs-12">
+                        </div>
+                        <div class="form-group col-md-4 col-sm-4 col-xs-12">
+                            <label>
+                                @Html.LabelFor(m => m.ROL_CODIGO)  <span class="required">*</span>
+                            </label>
+                            @Html.DropDownListFor(model => model.ROL_CODIGO, (SelectList)ViewBag.Rol, new { @class = "form-control", Id = "hddlRol" })
+                            @Html.ValidationMessageFor(model => model.ROL_CODIGO)
+                        </div>
+                        <div class="form-group col-md-4 col-sm-4 col-xs-12">
+                            <label>
+                                @Html.LabelFor(m => m.CLAVE) <span class="required">*</span>
+                            </label>
+                            @Html.PasswordFor(model => model.CLAVE, new { @class = "form-control", Id = "htxtContrasena", maxlength = "20", @Value = Model.CLAVE })
+                            @Html.ValidationMessageFor(model => model.CLAVE)
+                        </div>
+                        <div class="form-group col-md-2 col-sm-2 col-xs-12">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group col-md-2 col-sm-2 col-xs-12">
+                        </div>
+                        <div class="form-group col-md-4 col-sm-4 col-xs-12">
+                            <label>
+                                @Html.LabelFor(m => m.ESTADO_CODIGO)  <span class="required">*</span>
+                            </label>
+                            @Html.DropDownListFor(model => model.ESTADO_CODIGO, (SelectList)ViewBag.Estado, new { @class = "form-control", Id = "hddlEstado" })
+                            @Html.ValidationMessageFor(model => model.ESTADO_CODIGO)
+                        </div>
+                        <div class="form-group col-md-4 col-sm-4 col-xs-12">
+                            <label>
+                                @Html.LabelFor(m => m.AVATAR)
+                            </label>
+                            @Html.TextBox("file", "", new { type = "file", accept = "image/*", id = "imagen", name = "imagen" })
+                            <img src="@ViewData["urlAvatar"]" id="imagen-tag" width="300px" />
+                        </div>
+                        <div class="form-group col-md-2 col-sm-2 col-xs-12">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                    </div>
+
+                    
+                    <div class="row">
+                    </div>
+                    <div class="ln_solid"></div>
+                    <div class="form-group">
+                        <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-5">
+                            <button id="hbtnModificar" type="submit" class="btn btn-success">Guardar</button>
+                            <button id="btnCancelar" class="btn btn-primary" type="button">Cancelar</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
