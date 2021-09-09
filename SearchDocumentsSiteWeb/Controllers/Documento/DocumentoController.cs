@@ -89,7 +89,7 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
                         {
                             if (item.TIPO_CONTROL.Trim().Equals("0"))
                             {
-                                filtro = filtro + " (t." + item.NOMBRE_CAMPO + "='" + words[contador] + "' or '" + words[contador] + "'='')";    
+                                filtro = filtro + " (t." + item.NOMBRE_CAMPO + "='" + words[contador] + "' or '" + words[contador] + "'='')";
                             }
                             else
                             {
@@ -108,7 +108,7 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
                         {
                             if (item.TIPO_CONTROL.Trim().Equals("0"))
                             {
-                                filtro = filtro + " AND (t." + item.NOMBRE_CAMPO + "='" + words[contador] + "' or '" + words[contador] + "'='')";    
+                                filtro = filtro + " AND (t." + item.NOMBRE_CAMPO + "='" + words[contador] + "' or '" + words[contador] + "'='')";
                             }
                             else
                             {
@@ -122,7 +122,7 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
                 dt = objDocumentoBL.ObtenerListadoDinamico(select, filtro, objDocumentoEL.TABLA);
                 dynamic listado = new ExpandoObject();
                 var dictionary = (IDictionary<string, object>)listado;
-                if (dt!=null)
+                if (dt != null)
                 {
                     foreach (DataColumn dataColumn in dt.Columns)
                     {
@@ -134,7 +134,7 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
                         }
 
                         dictionary.Add(dataColumn.ColumnName, columnValueList);
-                    }    
+                    }
                 }
                 else
                 {
@@ -142,7 +142,7 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
                     columnaExtra.Add("Tabla no existe");
                     dictionary.Add("Resultado", columnaExtra);
                 }
-                
+
                 Session[Constantes.LISTA.Value] = null;
                 Session[Constantes.LISTA.Value] = listado;
                 return Json(listado, JsonRequestBehavior.AllowGet);
@@ -164,7 +164,8 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
                 ViewBag.hdnViewPdf = string.Empty;
                 ViewBag.hidIdUser = string.Empty;
             }
-            else {
+            else
+            {
                 ViewBag.hdnViewPdf = ConfigurationManager.AppSettings["ViewPdfOpcion"].ToString();
                 ViewBag.hidIdUser = SesionActual.Current.VC_DATAENCRY.ToString();
             }
@@ -194,7 +195,7 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
             //string strRutaArchivo = objDocumentoEL.CARPETA;  //"DIVISION MINERA/459297107/BOLETAS DE PAGO EMPLEADOS LIMA-RAURA MAR-1993";
             string strNombreArchivo = objDocumentoEL.NOMBRE_DOCUMENTO;//"/2_00000001.pdf";"2_00000001.pdf"; 
             strNombreArchivo = strNombreArchivo.Replace(@"\", @"/");
-            string path = string.Format("{0}/{1}", ConfigurationManager.AppSettings["RutaArchivosPDF"],  strNombreArchivo);
+            string path = string.Format("{0}/{1}", ConfigurationManager.AppSettings["RutaArchivosPDF"], strNombreArchivo);
 
             string strRespuesta = path;
 
@@ -321,5 +322,39 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
                 return RedirectToAction("ViewErrorPDF", "Documento");
             }
         }
+
+        [HttpGet]
+        public JsonResult Obtener_Datos_Tabla_Td(int templateId, int tocId)
+        {
+            IDocumentoBL objDocumentoBL = new DocumentoBL();
+            DataTable dt = new DataTable();
+            dt = objDocumentoBL.ObtenerDatoTablaTd(templateId, tocId);
+
+            dynamic listado = new ExpandoObject();
+            var dictionary = (IDictionary<string, object>)listado;
+            if (dt != null)
+            {
+                foreach (DataColumn dataColumn in dt.Columns)
+                {
+                    var columnValueList = new List<object>();
+
+                    foreach (DataRow dataRow in dt.Rows)
+                    {
+                        columnValueList.Add(dataRow[dataColumn.ColumnName]);
+                    }
+
+                    dictionary.Add(dataColumn.ColumnName, columnValueList);
+                }
+            }
+            else
+            {
+                var columnaExtra = new List<object>();
+                columnaExtra.Add("Tabla no existe");
+                dictionary.Add("Resultado", columnaExtra);
+            }
+
+            return Json(listado, JsonRequestBehavior.AllowGet);
+        }
+
     }
 }

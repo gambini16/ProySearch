@@ -188,5 +188,16 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
 
             return strMyPath;
         }
+
+        [HttpGet]
+        public JsonResult Get_Data_Td_Table(string parametros, string intTipoPlantilla)
+        {
+            string[] value = new string[4];
+
+            return this.Json((object)new
+            {
+                Value = value,
+            }, JsonRequestBehavior.AllowGet);
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿var GcolDTFile2 = '<center><img class="btnPdf" title="Ver" src="' + "../Content/images/pdf.png" + '"/></center>';
+﻿var GcolDTFile2 = '<img class="btnPdf" title="Ver" src="' + "../Content/images/pdf.png" + '"/>&nbsp;';
+const constBtnEditar = '<img class="btnEditar" title="Ver" src="' + "../Content/images/edit.png" + '"/>'
 
 var table1 = $('#tblDocumentos').DataTable();
 
@@ -18,11 +19,6 @@ $(function () {
                 var estructura = "";
                 for (var i = 0; i < result.length; i++) {
                     if (i == 0) {
-                        estructura = estructura + "<div class='form - group row'><label for='staticEmail' class='col-sm-2 col-form - label'>Email</label> <div class='col-sm-10'>";
-                        estructura = estructura + "<input type='text' readonly class='form-control-plaintext' id='staticEmail' value='email@example.com'>";
-                        estructura = estructura + "</div></div><div class='form-group row'><label for='inputPassword' class='col-sm-2 col-form-label'>Password</label><div class='col-sm-10'>";
-                        estructura = estructura + "<input type='password' class='form-control' id='inputPassword' placeholder='Password'></div></div>";
-
                         estructura = estructura + "<div class='form-group'>";
                         estructura = estructura + "<label class='control-label col-md-1' for='" + result[i].NOMBRE_CAMPO + "'>" + result[i].DATO_COLUMNA + "</label> ";
                         //estructura = estructura + "<div class='col-md-3'> @(Html.TextBox(" + result[i].NOMBRE_CAMPO + ", null, new { @class = 'form-control', maxlength ='" + result[i].LONGITUD_CAMPO + "'}))</div>";
@@ -128,7 +124,7 @@ function Index() {
 
             var item = {};
             item["title"] = "Ver";
-            item["render"] = function () { return GcolDTFile2 };
+            item["render"] = function () { return '<center>' + GcolDTFile2 + constBtnEditar + '</center>' };
             jsonObj.push(item);
             for (var i = 0; i < data.length; i++) {
                 var item = {}
@@ -189,6 +185,47 @@ function Index() {
                 f_open_popup_pdf(intCodigoFile);
 
                 //AbrirPopUpPDF(intCodigoFile);
+            });
+
+            $('#tblDocumentos tbody').on("click", 'img.btnEditar', function (event) {
+                event.preventDefault();
+                var $this = $(this);
+                var row = $this.closest("tr");
+                var intCodigoFile = row.find('td:eq(1)').text();
+                let tipoDocumento = $("#hddlTipoDocumento").val();
+                console.log('intCodigoFile: ' + intCodigoFile);
+                console.log('tipoDocumento: ' + tipoDocumento);
+
+                construirControles(tipoDocumento);
+                $("#myModal").modal();
+
+                ObtenerDatostablaTd(tipoDocumento, intCodigoFile);
+
+                //$.ajax({
+                //    type: 'Get',
+                //    async: false,
+                //    dataType: 'json',
+                //    cache: false,
+                //    url: BASE_APP_URL + "Solicitud/getDatosSolicitudXCaN_Cod_Det",
+                //    data: data,
+                //    success: function (data) {
+
+                //        $("#htxtNroSolicitudModal").val(data.objSolicitudEL.SOLICITUD_ID);
+                //        $("#htxtNombreModal").val(data.objSolicitudEL.NOMBRE_USUARIO);
+                //        $("#htxtCorreoElectronicoModal").val(data.objSolicitudEL.CORREO_ELECTRONICO);
+                //        $("#htxtTipoAtencioModal").val(data.objSolicitudEL.TIPO_ATENCION);
+                //        $("#htxtFechaSolicitudModal").val(data.objSolicitudEL.FECHA_SOLICITUD);
+                //        $("#htxtEstadoSolicitudModal").val(data.objSolicitudEL.EsV_NombreEstado);
+
+                //        $("#myModal").modal();
+
+                //    },
+                //    error: function () {
+                //        clearLoading();
+                //        bootbox.alert("Ocurrió un error", null);
+                //    }
+                //});
+
             });
 
             /*var table1 = $('#tblDocumentos').DataTable();
@@ -301,6 +338,140 @@ function AbrirPopUpPDF(intCodigoFile) {
         },
         error: function () {
             bootbox.alert("Ocurrió un error en el registro.", null);
+        }
+    });
+}
+
+function construirControles(codTipoDocumento) {
+
+    $.ajax({
+        url: BASE_APP_URL + "Documento/ListarFiltros",
+        type: "POST",
+        data: JSON.stringify({ 'codTipoDocumento': codTipoDocumento }),
+        dataType: "json",
+        traditional: true,
+        contentType: "application/json; charset=utf-8",
+        success: function (result) {
+            var estructura = "";
+            for (var i = 0; i < result.length; i++) {
+                if (i == 0) {
+                    estructura = estructura + "<div class='form-group'>";
+                    estructura = estructura + "<label class='control-label col-md-1' for='" + result[i].NOMBRE_CAMPO + "'>" + result[i].DATO_COLUMNA + "</label> ";
+                    //estructura = estructura + "<div class='col-md-3'> @(Html.TextBox(" + result[i].NOMBRE_CAMPO + ", null, new { @class = 'form-control', maxlength ='" + result[i].LONGITUD_CAMPO + "'}))</div>";
+                    estructura = estructura + "<div class='col-md-3'>";
+                    if (result[i].TIPO_CONTROL == "1") {
+                        estructura = estructura + "<select class='form-control' id='" + result[i].NOMBRE_CAMPO + "'>";
+                        for (var j = 0; j < result[i].CONTROL.length; j++) {
+                            estructura = estructura + "<option value='" + result[i].CONTROL[j].DESCRIPCION + "'>" + result[i].CONTROL[j].DESCRIPCION + "</option>";
+                        }
+                        estructura = estructura + "</select>";
+                    }
+                    else {
+                        estructura = estructura + "<input type='text' id='" + result[i].NOMBRE_CAMPO + "' maxlength='" + result[i].LONGITUD_CAMPO + "' class='form-control'/></div>";
+                    }
+
+                    if (i + 1 >= result.length) {
+                        estructura = estructura + "</div>";
+                    }
+                }
+                else {
+                    if (i % 3 == 0) {
+                        estructura = estructura + "</div><div class='form-group'>"
+                        estructura = estructura + "<label class='control-label col-md-1' for='" + result[i].NOMBRE_CAMPO + "'>" + result[i].DATO_COLUMNA + "</label> ";
+                        //estructura = estructura + "<div class='col-md-3'> @(Html.TextBox(" + result[i].NOMBRE_CAMPO + ", null, new { @class = 'form-control', maxlength ='" + result[i].LONGITUD_CAMPO + "'}))</div>";
+                        estructura = estructura + "<div class='col-md-3'>";
+                        if (result[i].TIPO_CONTROL == "1") {
+                            estructura = estructura + "<select class='form-control' id='" + result[i].NOMBRE_CAMPO + "'>";
+                            for (var j = 0; j < result[i].CONTROL.length; j++) {
+                                estructura = estructura + "<option value='" + result[i].CONTROL[j].DESCRIPCION + "'>" + result[i].CONTROL[j].DESCRIPCION + "</option>";
+                            }
+                            estructura = estructura + "</select>";
+                        }
+                        else {
+                            estructura = estructura + "<input type='text' id='" + result[i].NOMBRE_CAMPO + "' maxlength='" + result[i].LONGITUD_CAMPO + "' class='form-control'/></div>";
+                        }
+
+                        if (i + 1 >= result.length) {
+                            estructura = estructura + "</div>";
+                        }
+                    }
+                    else {
+                        estructura = estructura + "<label class='control-label col-md-1' for='" + result[i].NOMBRE_CAMPO + "'>" + result[i].DATO_COLUMNA + "</label> ";
+                        //estructura = estructura + "<div class='col-md-3'> @(Html.TextBox(" + result[i].NOMBRE_CAMPO + ", null, new { @class = 'form-control', maxlength ='" + result[i].LONGITUD_CAMPO + "'}))</div>";
+                        estructura = estructura + "<div class='col-md-3'>";
+                        if (result[i].TIPO_CONTROL == "1") {
+                            estructura = estructura + "<select class='form-control' id='" + result[i].NOMBRE_CAMPO + "'>";
+                            for (var j = 0; j < result[i].CONTROL.length; j++) {
+                                estructura = estructura + "<option value='" + result[i].CONTROL[j].DESCRIPCION + "'>" + result[i].CONTROL[j].DESCRIPCION + "</option>";
+                            }
+                            estructura = estructura + "</select>";
+                        }
+                        else {
+                            estructura = estructura + "<input type='text' id='" + result[i].NOMBRE_CAMPO + "' maxlength='" + result[i].LONGITUD_CAMPO + "' class='form-control'/></div>";
+                        }
+                        if (i + 1 >= result.length) {
+                            estructura = estructura + "</div>";
+                        }
+                    }
+                }
+            }
+            $("#EditarDocumento").html(estructura);
+        },
+        error: function () {
+            alert("An error has occured!!!");
+        }
+    });
+
+}
+
+function ObtenerDatostablaTd(tipoDocumento, intCodigoFile) {
+
+    $.ajax({
+        type: 'Get',
+        dataType: 'json',
+        cache: false,
+        url: BASE_APP_URL + "Documento/Obtener_Datos_Tabla_Td",
+        data: { templateId: tipoDocumento, tocId: intCodigoFile },
+        //beforeSend: addLoading("ContenidoWeb"),
+        success: function (data) {
+            //clearLoading();
+
+            var jsonData = []
+            if (data.length > 0) {
+                for (var j = 0; j < data[0].Value.length; j++) {
+                    var item2 = {}
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i].Value.valueOf()[j] == null) {
+                            item2[data[i].Key.valueOf()] = "";
+                        }
+                        else {
+                            item2[data[i].Key.valueOf()] = data[i].Value.valueOf()[j].valueOf();
+                        }
+                    }
+                    jsonData.push(item2);
+                }
+            }
+
+            for (var key in item2) {
+
+                console.log(key);
+                console.log(item2[key]);
+            }
+
+
+            $("#EditarDocumento :input").each(function () {
+                let nombreIdInput = $(this).attr("id");
+                //let valorInput = $(this).val();
+                //dictImportarDocumento.push({ key: nombreIdInput, value: valorInput });
+                for (var key in item2) {
+                    if (key == nombreIdInput.toUpperCase())
+                    {
+                        $(this).val(item2[key]);
+                    }
+                    //console.log(key);
+                    //console.log(item2[key]);
+                }
+            });
         }
     });
 }
