@@ -193,45 +193,12 @@ function Index() {
                 var row = $this.closest("tr");
                 var intCodigoFile = row.find('td:eq(1)').text();
                 let tipoDocumento = $("#hddlTipoDocumento").val();
-                console.log('intCodigoFile: ' + intCodigoFile);
-                console.log('tipoDocumento: ' + tipoDocumento);
 
                 construirControles(tipoDocumento);
                 $("#myModal").modal();
 
                 ObtenerDatostablaTd(tipoDocumento, intCodigoFile);
-
-                //$.ajax({
-                //    type: 'Get',
-                //    async: false,
-                //    dataType: 'json',
-                //    cache: false,
-                //    url: BASE_APP_URL + "Solicitud/getDatosSolicitudXCaN_Cod_Det",
-                //    data: data,
-                //    success: function (data) {
-
-                //        $("#htxtNroSolicitudModal").val(data.objSolicitudEL.SOLICITUD_ID);
-                //        $("#htxtNombreModal").val(data.objSolicitudEL.NOMBRE_USUARIO);
-                //        $("#htxtCorreoElectronicoModal").val(data.objSolicitudEL.CORREO_ELECTRONICO);
-                //        $("#htxtTipoAtencioModal").val(data.objSolicitudEL.TIPO_ATENCION);
-                //        $("#htxtFechaSolicitudModal").val(data.objSolicitudEL.FECHA_SOLICITUD);
-                //        $("#htxtEstadoSolicitudModal").val(data.objSolicitudEL.EsV_NombreEstado);
-
-                //        $("#myModal").modal();
-
-                //    },
-                //    error: function () {
-                //        clearLoading();
-                //        bootbox.alert("Ocurrió un error", null);
-                //    }
-                //});
-
             });
-
-            /*var table1 = $('#tblDocumentos').DataTable();
-            table1.destroy();
-            table1.clear().draw();
-            table1.rows.add(jsonData).draw();*/
         }
     });
 }
@@ -452,24 +419,14 @@ function ObtenerDatostablaTd(tipoDocumento, intCodigoFile) {
                 }
             }
 
-            for (var key in item2) {
-
-                console.log(key);
-                console.log(item2[key]);
-            }
-
-
             $("#EditarDocumento :input").each(function () {
+
                 let nombreIdInput = $(this).attr("id");
-                //let valorInput = $(this).val();
-                //dictImportarDocumento.push({ key: nombreIdInput, value: valorInput });
+
                 for (var key in item2) {
-                    if (key == nombreIdInput.toUpperCase())
-                    {
+                    if (key.toUpperCase() == nombreIdInput.toUpperCase()) {
                         $(this).val(item2[key]);
                     }
-                    //console.log(key);
-                    //console.log(item2[key]);
                 }
             });
         }
