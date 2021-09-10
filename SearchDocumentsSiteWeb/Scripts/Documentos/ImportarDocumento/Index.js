@@ -1,9 +1,24 @@
 ﻿let strMensajeValidacion = '';
 
 $(function () {
+    importarDocumentojs.inicializarEvento();
+});
 
-    $("#hddlTipoDocumento").on('change', function () {
-        var codTipoDocumento = $(this).val();
+let importarDocumentojs = {
+
+    inicializarEvento: function () {
+        $("#btnImportar").click(function (event) {
+            event.preventDefault();
+            importarDocumentojs.GuadarEnBaseDatos();
+        });
+
+        $("#hddlTipoDocumento").on('change', function () {
+            var codTipoDocumento = $(this).val();
+            importarDocumentojs.listarControles(codTipoDocumento, "Parametros");
+        }).change();
+    },
+
+    listarControles: function (codTipoDocumento, divName) {
 
         $.ajax({
             url: BASE_APP_URL + "Documento/ListarFiltros",
@@ -76,89 +91,81 @@ $(function () {
                         }
                     }
                 }
-                $("#Parametros").html(estructura);
+                $("#" + divName + "").html(estructura);
             },
             error: function () {
-                alert("An error has occured!!!");
+                alert("A ocurrido un error!!!");
             }
         });
 
-    }).change();
-});
+    },
 
-$(document).ready(function () {
+    GuadarEnBaseDatos: function () {
 
-    $("#btnImportar").click(function (event) {
-        event.preventDefault();
-        GuadarEnBaseDatos();
-    });
-});
+        let dictImportarDocumento = [];
+        let intTipoPlantilla = $("#hddlTipoDocumento").val();
+        let nombreConmpletoArchivo = $('input[type=file]').val().split('\\').pop();
+        let nombreArchivoSinExtension = nombreConmpletoArchivo.split('.')[0];
 
-function GuadarEnBaseDatos() {
+        $("#Parametros :input").each(function () {
+            let nombreIdInput = $(this).attr("id");
+            let valorInput = $(this).val();
+            dictImportarDocumento.push({ key: nombreIdInput, value: valorInput });
+        });
 
-    //let request = {};
-    let dictImportarDocumento = [];
-    let intTipoPlantilla = $("#hddlTipoDocumento").val();
-    let nombreConmpletoArchivo = $('input[type=file]').val().split('\\').pop();
-    let nombreArchivoSinExtension = nombreConmpletoArchivo.split('.')[0];
-
-    $("#Parametros :input").each(function () {
-        let nombreIdInput = $(this).attr("id");
-        let valorInput = $(this).val();
-        dictImportarDocumento.push({ key: nombreIdInput, value: valorInput });
-    });
-
-    $.ajax({
-        type: 'Post',
-        dataType: 'json',
-        cache: false,
-        url: BASE_APP_URL + "ImportarDocumento/GuadarEnBaseDatos",
-        data: { dictImportarDocumento: dictImportarDocumento, intTipoPlantilla: intTipoPlantilla, nombreArchivo: nombreArchivoSinExtension },
-        beforeSend: addLoading("ContenidoWeb"),
-        async: true,
-        success: function (data) {
-            console.log(data.Value);
-            clearLoading();
-            if (data.Value > 0) {
-                let pageId = data.Value;
-                SubirPDF(pageId);
+        $.ajax({
+            type: 'Post',
+            dataType: 'json',
+            cache: false,
+            url: BASE_APP_URL + "ImportarDocumento/GuadarEnBaseDatos",
+            data: { dictImportarDocumento: dictImportarDocumento, intTipoPlantilla: intTipoPlantilla, nombreArchivo: nombreArchivoSinExtension },
+            beforeSend: addLoading("ContenidoWeb"),
+            async: true,
+            success: function (data) {
+                console.log(data.Value);
+                clearLoading();
+                if (data.Value > 0) {
+                    let pageId = data.Value;
+                    importarDocumentojs.SubirPDF(pageId);
+                }
+            },
+            error: function (data) {
+                bootbox.alert("Error al cargar archivo: " + data, null);
             }
-        },
-        error: function (data) {
-            bootbox.alert("Error al cargar archivo: " + data, null);
-        }
-    });
+        });
+    },
+
+    SubirPDF: function (pageId) {
+
+        var selectFile = ($("#fileUploadImp"))[0].files[0];
+        var dataString = new FormData();
+        dataString.append("fileUpload", selectFile);
+        dataString.append("pageId", pageId);
+
+        $.ajax({
+            url: BASE_APP_URL + "ImportarDocumento/SubirPDF",
+            type: "POST",
+            data: dataString,
+            contentType: false,
+            processData: false,
+            async: true,
+            success: function (data) {
+
+                if (typeof (data.Value) != "undefined") {
+                    bootbox.alert("Se cargó el archivo correctamente", null);
+                    $('#Parametros').find('input:text').val('');
+                    $("#fileUploadImp").val("");
+                }
+                else {
+                    alert('Error al cargar Archivo PDF');
+                }
+            },
+            error: function (data) {
+                dialog.modal('hide');
+                alert('Error en Archivo PDF');
+            }
+        });
+    }
 }
 
-function SubirPDF(pageId) {
 
-    var selectFile = ($("#fileUploadImp"))[0].files[0];
-    var dataString = new FormData();
-    dataString.append("fileUpload", selectFile);
-    dataString.append("pageId", pageId);
-
-    $.ajax({
-        url: BASE_APP_URL + "ImportarDocumento/SubirPDF",
-        type: "POST",
-        data: dataString,
-        contentType: false,
-        processData: false,
-        async: true,
-        success: function (data) {
-
-            if (typeof (data.Value) != "undefined") {
-                bootbox.alert("Se cargó el archivo correctamente", null);
-                $('#Parametros').find('input:text').val('');
-                //$("#sexo").val("--Seleccione--");
-                $("#fileUploadImp").val("");
-            }
-            else {
-                alert('Error al cargar Archivo PDF');
-            }
-        },
-        error: function (data) {
-            dialog.modal('hide');
-            alert('Error en Archivo PDF');
-        }
-    });
-}

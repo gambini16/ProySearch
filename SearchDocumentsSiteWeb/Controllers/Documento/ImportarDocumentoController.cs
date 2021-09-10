@@ -53,8 +53,11 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
         {
             IImportarDocumentoBL objImportarDocumentoBL = new ImportarDocumentoBL();
 
+            const bool consIsNew = true;
+
             var objTBL_TOCEL = new TBL_TOCEL
             {
+                IsNew = consIsNew,
                 ParentId = int.Parse(ConfigurationManager.AppSettings["consParentId"]),
                 Name = nombreArchivo,
                 ElType = int.Parse(ConfigurationManager.AppSettings["consElType"]),
@@ -65,24 +68,26 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
                 Ext_File = ConfigurationManager.AppSettings["consExt_File"].ToString()
             };
 
-            var tocId = objImportarDocumentoBL.fn_Insert_Tbl_toc(objTBL_TOCEL);
+            var tocId = objImportarDocumentoBL.fn_Insert_Update_Tbl_toc(objTBL_TOCEL);
 
             if (int.Parse(tocId) > 0)
             {
 
                 var objTBL_TDEL = new TBL_TDEL
                 {
+                    IsNew = consIsNew,
                     tocId = int.Parse(tocId),
                     TemplateId = intTipoPlantilla,
                     dictImportarDocumento = dictImportarDocumento
                 };
 
-                var resultTd = objImportarDocumentoBL.fn_insert_tbl_td(objTBL_TDEL);
+                var resultTd = objImportarDocumentoBL.fn_Insert_Update_tbl_td(objTBL_TDEL);
 
                 if (resultTd == "0")
                 {
                     var objTBL_DOCEL = new TBL_DOCEL
                     {
+                        IsNew = consIsNew,
                         TocId = int.Parse(tocId),
                         PageNum = int.Parse(ConfigurationManager.AppSettings["consPageNum"]),
                         img_size = 0,
@@ -94,7 +99,7 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
                         img_bpp = ConfigurationManager.AppSettings["consImg_bpp"].ToString()
                     };
 
-                    var result = objImportarDocumentoBL.fn_Insert_Tbl_doc(objTBL_DOCEL);
+                    var result = objImportarDocumentoBL.fn_Insert_Update_Tbl_doc(objTBL_DOCEL);
 
                     return this.Json((object)new
                     {
@@ -187,17 +192,6 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
             }
 
             return strMyPath;
-        }
-
-        [HttpGet]
-        public JsonResult Get_Data_Td_Table(string parametros, string intTipoPlantilla)
-        {
-            string[] value = new string[4];
-
-            return this.Json((object)new
-            {
-                Value = value,
-            }, JsonRequestBehavior.AllowGet);
         }
     }
 }

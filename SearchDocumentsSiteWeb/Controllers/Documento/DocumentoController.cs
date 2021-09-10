@@ -1,9 +1,11 @@
 ﻿using SearchDocuments.Comunes;
 using SearchDocuments.Criptografia;
 using SearchDocuments.Entidades;
+using SearchDocuments.Entidades.ImportarDocumento;
 using SearchDocuments.Entidades.Listado;
 using SearchDocuments.Negocio.Documento;
 using SearchDocuments.Negocio.Filtro;
+using SearchDocuments.Negocio.ImportarDocumento;
 using SearchDocumentsSiteWeb.Controllers.Modulo;
 using SearchDocumentsSiteWeb.Controllers.Parametro;
 using SearchDocumentsSiteWeb.General;
@@ -249,6 +251,7 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
             }
             return Json(objData, JsonRequestBehavior.AllowGet);
         }
+       
         public ActionResult GetPdf()
         {
             try
@@ -356,5 +359,82 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
             return Json(listado, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpPost]
+        public JsonResult ActualizarEnBaseDatos(Dictionary<string, string> dictImportarDocumento, int intTipoPlantilla, string nombreArchivo, int tocId)
+        {
+            IImportarDocumentoBL objImportarDocumentoBL = new ImportarDocumentoBL();
+
+            var objTBL_TOCEL = new TBL_TOCEL
+            {
+                TocId = tocId,
+                ParentId = int.Parse(ConfigurationManager.AppSettings["consParentId"]),
+                Name = nombreArchivo,
+                ElType = int.Parse(ConfigurationManager.AppSettings["consElType"]),
+                LastModified = DateTime.Now,
+                CreateDate = DateTime.Now,
+                IsIndexed = 0,
+                VolumeId = int.Parse(ConfigurationManager.AppSettings["consVolumeId"]),
+                TemplateId = intTipoPlantilla,
+                PageCount = int.Parse(ConfigurationManager.AppSettings["consPageCount"]),
+                Creator = SesionActual.Current.NOMBRE_COMPLETO,
+                Toc_Flags = 1,
+                Toc_Owner = string.Empty,
+                Toc_Comment = string.Empty
+            };
+
+            var resultDoc = objImportarDocumentoBL.fn_Insert_Update_Tbl_toc(objTBL_TOCEL);
+
+            if (resultDoc == "0")
+            {
+
+                var objTBL_TDEL = new TBL_TDEL
+                {
+                    tocId = tocId,
+                    TemplateId = intTipoPlantilla,
+                    dictImportarDocumento = dictImportarDocumento
+                };
+
+                var resultTd = objImportarDocumentoBL.fn_Insert_Update_tbl_td(objTBL_TDEL);
+
+                if (resultTd == "0")
+                {
+                    var objTBL_DOCEL = new TBL_DOCEL
+                    {
+                        TocId = tocId,
+                        PageNum = int.Parse(ConfigurationManager.AppSettings["consPageNum"]),
+                        img_size = 0,
+                        txt_size = int.Parse(ConfigurationManager.AppSettings["consTxt_size"]),
+                        img_width = int.Parse(ConfigurationManager.AppSettings["consImg_width"]),
+                        img_height = int.Parse(ConfigurationManager.AppSettings["consImg_height"]),
+                        img_xdpi = int.Parse(ConfigurationManager.AppSettings["consImg_xdpi"]),
+                        img_ydpi = int.Parse(ConfigurationManager.AppSettings["consImg_ydpi"]),
+                        img_bpp = ConfigurationManager.AppSettings["consImg_bpp"].ToString()
+                    };
+
+                    var result = objImportarDocumentoBL.fn_Insert_Update_Tbl_doc(objTBL_DOCEL);
+
+                    return this.Json((object)new
+                    {
+                        Value = int.Parse(result) > 0 ? result : "NOOK",
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return this.Json((object)new
+                    {
+                        Value = resultTd,
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            else
+            {
+                return this.Json((object)new
+                {
+                    Value = tocId,
+                    //Message = "Subido con éxito",
+                    //CodigoFile = 1
+                }, JsonRequestBehavior.AllowGet);
+            }
+        }
     }
 }

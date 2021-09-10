@@ -3,13 +3,9 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <!-- JAVASCRIPT -->
-
+<script src="~/Scripts/Documentos/ImportarDocumento/Index.js"></script>
 @Html.Hidden("hhdnOpcionesAcceso", ViewData["OPCIONES_USUARIO"])
 @Html.Hidden("hhdnPerfilUser", ViewData["LOGUEO_PERFIL"])
-
-
-@*<input type="hidden" value="@ViewBag.hdnViewPdf" id="hidViewPdf" />
-    <input type="hidden" value="@ViewBag.hidIdUser" id="hidIdUser" />*@
 
 <br />
 <br />
@@ -79,4 +75,3 @@
     </div>
 </div>
 
-<script src="~/Scripts/Documentos/ImportarDocumento/Index.js"></script>

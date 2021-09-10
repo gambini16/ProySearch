@@ -1,10 +1,9 @@
 ﻿var GcolDTFile2 = '<img class="btnPdf" title="Ver" src="' + "../Content/images/pdf.png" + '"/>&nbsp;';
 const constBtnEditar = '<img class="btnEditar" title="Ver" src="' + "../Content/images/edit.png" + '"/>'
-
+let strMensajeValidacion = '';
 var table1 = $('#tblDocumentos').DataTable();
 
 $(function () {
-
     $("#hddlTipoDocumento").on('change', function () {
         var codTipoDocumento = $(this).val();
 
@@ -79,6 +78,8 @@ $(function () {
                         }
                     }
                 }
+                //table1.destroy();
+                $('#tblDocumentos').empty();
                 $("#Parametros").html(estructura);
             },
             error: function () {
@@ -198,6 +199,7 @@ function Index() {
                 $("#myModal").modal();
 
                 ObtenerDatostablaTd(tipoDocumento, intCodigoFile);
+                inicializarControlesModal();
             });
         }
     });
@@ -226,7 +228,34 @@ $(document).ready(function () {
         event.preventDefault();
         $('#Parametros').find('input:text').val('');
     });
+
+    inicializarControlesModal();
+
+    $("#chkUploadEdit").click(function () {
+        if ($(this).is(':checked')) {
+            $("#fileUploadEdit").prop("disabled", false);
+        } else {
+            $("#fileUploadEdit").prop("disabled", true);
+        }
+    });
+
+    $("#btnGuardarModal").click(function (event) {
+        event.preventDefault();
+
+        if (IsFileUploadFill()) {
+            ActualizarEnBaseDatos();
+        } else {
+            bootbox.alert(strMensajeValidacion, null);
+        }
+    });
+
 });
+
+function inicializarControlesModal() {
+    $("#chkUploadEdit").prop("checked", false);
+    $("#fileUploadEdit").val('');
+    $("#fileUploadEdit").prop("disabled", true);
+}
 
 function f_open_popup_pdf(intCodigoFile) {
 
@@ -274,7 +303,6 @@ function f_open_popup_pdf(intCodigoFile) {
     }
 
 }
-
 
 function AbrirPopUpPDF(intCodigoFile) {
     var parametro = { "intCodigoFile": intCodigoFile };
@@ -419,6 +447,13 @@ function ObtenerDatostablaTd(tipoDocumento, intCodigoFile) {
                 }
             }
 
+            for (var key in item2) {
+                console.log(key);
+                console.log(item2[key]);
+            }
+
+            let tocId = item2['TocId'];
+            $("#hiddenModalTocId").val(tocId);
             $("#EditarDocumento :input").each(function () {
 
                 let nombreIdInput = $(this).attr("id");
@@ -431,4 +466,89 @@ function ObtenerDatostablaTd(tipoDocumento, intCodigoFile) {
             });
         }
     });
+}
+
+function ActualizarEnBaseDatos() {
+
+    let dictImportarDocumento = [];
+    let intTipoPlantilla = $("#hddlTipoDocumento").val();
+    let nombreConmpletoArchivo = $('input[type=file]').val().split('\\').pop();
+    let nombreArchivoSinExtension = nombreConmpletoArchivo.split('.')[0];
+    let tocId = $("#hiddenModalTocId").val()
+
+    $("#EditarDocumento :input").each(function () {
+        let nombreIdInput = $(this).attr("id");
+        let valorInput = $(this).val();
+        dictImportarDocumento.push({ key: nombreIdInput, value: valorInput });
+    });
+
+    $.ajax({
+        type: 'Post',
+        dataType: 'json',
+        cache: false,
+        url: BASE_APP_URL + "Documento/ActualizarEnBaseDatos",
+        data: { dictImportarDocumento: dictImportarDocumento, intTipoPlantilla: intTipoPlantilla, nombreArchivo: nombreArchivoSinExtension, tocId: tocId },
+        beforeSend: addLoading("ContenidoWeb"),
+        async: true,
+        success: function (data) {
+            clearLoading();
+
+            if ($('#chkUploadEdit').prop('checked')) {
+
+                let pageId = data.Value;
+                //alert('Seleccionado');
+                SubirUpdatePDF(pageId);
+            } else {
+                bootbox.alert("Se actulizó el documento de manera correcta", null);
+            }
+
+            $("#btnCancelarPopUP").click();
+            $("#btnConsultar").click();
+        },
+        error: function (data) {
+            bootbox.alert("Error al cargar archivo: " + data, null);
+        }
+    });
+}
+
+function SubirUpdatePDF(pageId) {
+
+    var selectFile = ($("#fileUploadEdit"))[0].files[0];
+    var dataString = new FormData();
+    dataString.append("fileUpload", selectFile);
+    dataString.append("pageId", pageId);
+
+    $.ajax({
+        url: BASE_APP_URL + "ImportarDocumento/SubirPDF",
+        type: "POST",
+        data: dataString,
+        contentType: false,
+        processData: false,
+        async: true,
+        success: function (data) {
+
+            if (typeof (data.Value) != "undefined") {
+                bootbox.alert("Se cargó el archivo correctamente", null);
+                $("#fileUploadEdit").val("");
+            }
+            else {
+                alert('Error al cargar Archivo PDF');
+            }
+        },
+        error: function (data) {
+            dialog.modal('hide');
+            alert('Error en Archivo PDF');
+        }
+    });
+}
+
+function IsFileUploadFill() {
+    var isOk = true;
+
+    if ($('#fileUploadEdit').get(0).files.length === 0) {
+        isOk = false;
+        strMensajeValidacion = 'Por favor seleccione un archivo con extensión .pdf';
+    }
+
+    return isOk;
 }
