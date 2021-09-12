@@ -479,3 +479,4 @@ function IsFileUploadFill() {
 }
 
 function test() { }
+function test2() { }
