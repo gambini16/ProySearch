@@ -5,88 +5,10 @@ var table1 = $('#tblDocumentos').DataTable();
 
 $(function () {
     $("#hddlTipoDocumento").on('change', function () {
+
         var codTipoDocumento = $(this).val();
-
-        $.ajax({
-            url: BASE_APP_URL + "Documento/ListarFiltros",
-            type: "POST",
-            data: JSON.stringify({ 'codTipoDocumento': codTipoDocumento }),
-            dataType: "json",
-            traditional: true,
-            contentType: "application/json; charset=utf-8",
-            success: function (result) {
-                var estructura = "";
-                for (var i = 0; i < result.length; i++) {
-                    if (i == 0) {
-                        estructura = estructura + "<div class='form-group'>";
-                        estructura = estructura + "<label class='control-label col-md-1' for='" + result[i].NOMBRE_CAMPO + "'>" + result[i].DATO_COLUMNA + "</label> ";
-                        //estructura = estructura + "<div class='col-md-3'> @(Html.TextBox(" + result[i].NOMBRE_CAMPO + ", null, new { @class = 'form-control', maxlength ='" + result[i].LONGITUD_CAMPO + "'}))</div>";
-                        estructura = estructura + "<div class='col-md-3'>";
-                        if (result[i].TIPO_CONTROL == "1") {
-                            estructura = estructura + "<select class='form-control' id='" + result[i].NOMBRE_CAMPO + "'>";
-                            for (var j = 0; j < result[i].CONTROL.length; j++) {
-                                estructura = estructura + "<option value='" + result[i].CONTROL[j].DESCRIPCION + "'>" + result[i].CONTROL[j].DESCRIPCION + "</option>";
-                            }
-                            estructura = estructura + "</select>";
-                        }
-                        else {
-                            estructura = estructura + "<input type='text' id='" + result[i].NOMBRE_CAMPO + "' maxlength='" + result[i].LONGITUD_CAMPO + "' class='form-control'/></div>";
-                        }
-
-                        if (i + 1 >= result.length) {
-                            estructura = estructura + "</div>";
-                        }
-                    }
-                    else {
-                        if (i % 3 == 0) {
-                            estructura = estructura + "</div><div class='form-group'>"
-                            estructura = estructura + "<label class='control-label col-md-1' for='" + result[i].NOMBRE_CAMPO + "'>" + result[i].DATO_COLUMNA + "</label> ";
-                            //estructura = estructura + "<div class='col-md-3'> @(Html.TextBox(" + result[i].NOMBRE_CAMPO + ", null, new { @class = 'form-control', maxlength ='" + result[i].LONGITUD_CAMPO + "'}))</div>";
-                            estructura = estructura + "<div class='col-md-3'>";
-                            if (result[i].TIPO_CONTROL == "1") {
-                                estructura = estructura + "<select class='form-control' id='" + result[i].NOMBRE_CAMPO + "'>";
-                                for (var j = 0; j < result[i].CONTROL.length; j++) {
-                                    estructura = estructura + "<option value='" + result[i].CONTROL[j].DESCRIPCION + "'>" + result[i].CONTROL[j].DESCRIPCION + "</option>";
-                                }
-                                estructura = estructura + "</select>";
-                            }
-                            else {
-                                estructura = estructura + "<input type='text' id='" + result[i].NOMBRE_CAMPO + "' maxlength='" + result[i].LONGITUD_CAMPO + "' class='form-control'/></div>";
-                            }
-
-                            if (i + 1 >= result.length) {
-                                estructura = estructura + "</div>";
-                            }
-                        }
-                        else {
-                            estructura = estructura + "<label class='control-label col-md-1' for='" + result[i].NOMBRE_CAMPO + "'>" + result[i].DATO_COLUMNA + "</label> ";
-                            //estructura = estructura + "<div class='col-md-3'> @(Html.TextBox(" + result[i].NOMBRE_CAMPO + ", null, new { @class = 'form-control', maxlength ='" + result[i].LONGITUD_CAMPO + "'}))</div>";
-                            estructura = estructura + "<div class='col-md-3'>";
-                            if (result[i].TIPO_CONTROL == "1") {
-                                estructura = estructura + "<select class='form-control' id='" + result[i].NOMBRE_CAMPO + "'>";
-                                for (var j = 0; j < result[i].CONTROL.length; j++) {
-                                    estructura = estructura + "<option value='" + result[i].CONTROL[j].DESCRIPCION + "'>" + result[i].CONTROL[j].DESCRIPCION + "</option>";
-                                }
-                                estructura = estructura + "</select>";
-                            }
-                            else {
-                                estructura = estructura + "<input type='text' id='" + result[i].NOMBRE_CAMPO + "' maxlength='" + result[i].LONGITUD_CAMPO + "' class='form-control'/></div>";
-                            }
-                            if (i + 1 >= result.length) {
-                                estructura = estructura + "</div>";
-                            }
-                        }
-                    }
-                }
-                //table1.destroy();
-                $('#tblDocumentos').empty();
-                $("#Parametros").html(estructura);
-            },
-            error: function () {
-                alert("An error has occured!!!");
-            }
-        });
-
+        importarDocumentojs.listarControles(codTipoDocumento, "Parametros");
+        $('#tblDocumentos').empty();
     }).change();
 });
 
@@ -195,7 +117,9 @@ function Index() {
                 var intCodigoFile = row.find('td:eq(1)').text();
                 let tipoDocumento = $("#hddlTipoDocumento").val();
 
-                construirControles(tipoDocumento);
+                //construirControles(tipoDocumento);
+
+                importarDocumentojs.listarControles(tipoDocumento, "EditarDocumento");
                 $("#myModal").modal();
 
                 ObtenerDatostablaTd(tipoDocumento, intCodigoFile);
@@ -242,10 +166,16 @@ $(document).ready(function () {
     $("#btnGuardarModal").click(function (event) {
         event.preventDefault();
 
-        if (IsFileUploadFill()) {
+        if ($('#chkUploadEdit').prop('checked')) {
+            if (IsFileUploadFill()) {
+                ActualizarEnBaseDatos();
+            }
+            else {
+                bootbox.alert(strMensajeValidacion, null);
+            }
+        }
+        else{
             ActualizarEnBaseDatos();
-        } else {
-            bootbox.alert(strMensajeValidacion, null);
         }
     });
 
@@ -350,10 +280,10 @@ function construirControles(codTipoDocumento) {
             var estructura = "";
             for (var i = 0; i < result.length; i++) {
                 if (i == 0) {
-                    estructura = estructura + "<div class='form-group'>";
+                    estructura = estructura + "<div class='row'>";
+                    estructura = estructura + "<div class='col-md-4 col-sm-4 col-xs-12'>";
                     estructura = estructura + "<label class='control-label col-md-1' for='" + result[i].NOMBRE_CAMPO + "'>" + result[i].DATO_COLUMNA + "</label> ";
-                    //estructura = estructura + "<div class='col-md-3'> @(Html.TextBox(" + result[i].NOMBRE_CAMPO + ", null, new { @class = 'form-control', maxlength ='" + result[i].LONGITUD_CAMPO + "'}))</div>";
-                    estructura = estructura + "<div class='col-md-3'>";
+
                     if (result[i].TIPO_CONTROL == "1") {
                         estructura = estructura + "<select class='form-control' id='" + result[i].NOMBRE_CAMPO + "'>";
                         for (var j = 0; j < result[i].CONTROL.length; j++) {
@@ -371,16 +301,15 @@ function construirControles(codTipoDocumento) {
                 }
                 else {
                     if (i % 3 == 0) {
-                        estructura = estructura + "</div><div class='form-group'>"
+                        estructura = estructura + "<div class='row'>";
+                        estructura = estructura + "<div class='col-md-4 col-sm-4 col-xs-12'>";
                         estructura = estructura + "<label class='control-label col-md-1' for='" + result[i].NOMBRE_CAMPO + "'>" + result[i].DATO_COLUMNA + "</label> ";
-                        //estructura = estructura + "<div class='col-md-3'> @(Html.TextBox(" + result[i].NOMBRE_CAMPO + ", null, new { @class = 'form-control', maxlength ='" + result[i].LONGITUD_CAMPO + "'}))</div>";
-                        estructura = estructura + "<div class='col-md-3'>";
                         if (result[i].TIPO_CONTROL == "1") {
                             estructura = estructura + "<select class='form-control' id='" + result[i].NOMBRE_CAMPO + "'>";
                             for (var j = 0; j < result[i].CONTROL.length; j++) {
                                 estructura = estructura + "<option value='" + result[i].CONTROL[j].DESCRIPCION + "'>" + result[i].CONTROL[j].DESCRIPCION + "</option>";
                             }
-                            estructura = estructura + "</select>";
+                            estructura = estructura + "</select></div>";
                         }
                         else {
                             estructura = estructura + "<input type='text' id='" + result[i].NOMBRE_CAMPO + "' maxlength='" + result[i].LONGITUD_CAMPO + "' class='form-control'/></div>";
@@ -391,9 +320,8 @@ function construirControles(codTipoDocumento) {
                         }
                     }
                     else {
+                        estructura = estructura + "<div class='col-md-4 col-sm-4 col-xs-12'>";
                         estructura = estructura + "<label class='control-label col-md-1' for='" + result[i].NOMBRE_CAMPO + "'>" + result[i].DATO_COLUMNA + "</label> ";
-                        //estructura = estructura + "<div class='col-md-3'> @(Html.TextBox(" + result[i].NOMBRE_CAMPO + ", null, new { @class = 'form-control', maxlength ='" + result[i].LONGITUD_CAMPO + "'}))</div>";
-                        estructura = estructura + "<div class='col-md-3'>";
                         if (result[i].TIPO_CONTROL == "1") {
                             estructura = estructura + "<select class='form-control' id='" + result[i].NOMBRE_CAMPO + "'>";
                             for (var j = 0; j < result[i].CONTROL.length; j++) {
@@ -407,6 +335,8 @@ function construirControles(codTipoDocumento) {
                         if (i + 1 >= result.length) {
                             estructura = estructura + "</div>";
                         }
+
+                        if ((i + 1) % 3 == 0) estructura = estructura + "</div>";
                     }
                 }
             }
@@ -445,11 +375,6 @@ function ObtenerDatostablaTd(tipoDocumento, intCodigoFile) {
                     }
                     jsonData.push(item2);
                 }
-            }
-
-            for (var key in item2) {
-                console.log(key);
-                console.log(item2[key]);
             }
 
             let tocId = item2['TocId'];
@@ -496,10 +421,10 @@ function ActualizarEnBaseDatos() {
             if ($('#chkUploadEdit').prop('checked')) {
 
                 let pageId = data.Value;
-                //alert('Seleccionado');
                 SubirUpdatePDF(pageId);
+
             } else {
-                bootbox.alert("Se actulizó el documento de manera correcta", null);
+                bootbox.alert("Se actualizó el documento de manera correcta", null);
             }
 
             $("#btnCancelarPopUP").click();

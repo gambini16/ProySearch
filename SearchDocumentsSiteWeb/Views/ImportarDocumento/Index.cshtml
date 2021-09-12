@@ -42,18 +42,18 @@
             <div class="x_content">
                 <form id="frmBusqueda" data-parsley-validate class="form-horizontal form-label-left">
                     <div class="form-bodyBuscar">
-                        <div class="form-group">
-                            <label class="control-label col-md-1" for="hddlTipoDocumento">Plantilla</label>
-                            <div class="col-md-3">
+                        <div class="row">
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                <label for="hddlTipoDocumento">PLANTILLA</label>
                                 @Html.DropDownList("hddlTipoDocumento", (SelectList)ViewBag.TipoDocumento, new { @class = "form-control" })
                             </div>
                         </div>
-                        <div id="Parametros">
+                        <div id="ParametrosImportarDocumento">
 
                         </div>
-                        <div class="form-group">
-                            <label class="control-label col-md-1">ARCHIVO</label>
-                            <div class="col-md-3">
+                        <div class="row">
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                <label>ARCHIVO</label>
                                 <input type="file" name="fileUploadImp" id="fileUploadImp" accept="application/pdf">
                             </div>
                         </div>

@@ -1,6 +1,4 @@
-﻿let strMensajeValidacion = '';
-
-$(function () {
+﻿$(function () {
     importarDocumentojs.inicializarEvento();
 });
 
@@ -9,12 +7,12 @@ let importarDocumentojs = {
     inicializarEvento: function () {
         $("#btnImportar").click(function (event) {
             event.preventDefault();
-            importarDocumentojs.GuadarEnBaseDatos();
+            importarDocumentojs.guadarEnBaseDatos();
         });
 
         $("#hddlTipoDocumento").on('change', function () {
             var codTipoDocumento = $(this).val();
-            importarDocumentojs.listarControles(codTipoDocumento, "Parametros");
+            importarDocumentojs.listarControles(codTipoDocumento, "ParametrosImportarDocumento");
         }).change();
     },
 
@@ -31,9 +29,9 @@ let importarDocumentojs = {
                 var estructura = "";
                 for (var i = 0; i < result.length; i++) {
                     if (i == 0) {
-                        estructura = estructura + "<div class='form-group'>";
-                        estructura = estructura + "<label class='control-label col-md-1' for='" + result[i].NOMBRE_CAMPO + "'>" + result[i].DATO_COLUMNA + "</label> ";
-                        estructura = estructura + "<div class='col-md-3'>";
+                        estructura = estructura + "<div class='row'>";
+                        estructura = estructura + "<div class='col-md-4 col-sm-4 col-xs-12'>";
+                        estructura = estructura + "<label for='" + result[i].NOMBRE_CAMPO + "'>" + result[i].DATO_COLUMNA + "</label> ";
 
                         if (result[i].TIPO_CONTROL == "1") {
                             estructura = estructura + "<select class='form-control' id='" + result[i].NOMBRE_CAMPO + "'>";
@@ -52,16 +50,15 @@ let importarDocumentojs = {
                     }
                     else {
                         if (i % 3 == 0) {
-                            estructura = estructura + "</div><div class='form-group'>"
-                            estructura = estructura + "<label class='control-label col-md-1' for='" + result[i].NOMBRE_CAMPO + "'>" + result[i].DATO_COLUMNA + "</label> ";
-                            estructura = estructura + "<div class='col-md-3'>";
-
+                            estructura = estructura + "<div class='row'>";
+                            estructura = estructura + "<div class='col-md-4 col-sm-4 col-xs-12'>";
+                            estructura = estructura + "<label for='" + result[i].NOMBRE_CAMPO + "'>" + result[i].DATO_COLUMNA + "</label> ";
                             if (result[i].TIPO_CONTROL == "1") {
                                 estructura = estructura + "<select class='form-control' id='" + result[i].NOMBRE_CAMPO + "'>";
                                 for (var j = 0; j < result[i].CONTROL.length; j++) {
                                     estructura = estructura + "<option value='" + result[i].CONTROL[j].DESCRIPCION + "'>" + result[i].CONTROL[j].DESCRIPCION + "</option>";
                                 }
-                                estructura = estructura + "</select>";
+                                estructura = estructura + "</select></div>";
                             }
                             else {
                                 estructura = estructura + "<input type='text' id='" + result[i].NOMBRE_CAMPO + "' maxlength='" + result[i].LONGITUD_CAMPO + "' class='form-control'/></div>";
@@ -72,9 +69,8 @@ let importarDocumentojs = {
                             }
                         }
                         else {
-                            estructura = estructura + "<label class='control-label col-md-1' for='" + result[i].NOMBRE_CAMPO + "'>" + result[i].DATO_COLUMNA + "</label> ";
-                            estructura = estructura + "<div class='col-md-3'>";
-
+                            estructura = estructura + "<div class='col-md-4 col-sm-4 col-xs-12'>";
+                            estructura = estructura + "<label for='" + result[i].NOMBRE_CAMPO + "'>" + result[i].DATO_COLUMNA + "</label> ";
                             if (result[i].TIPO_CONTROL == "1") {
                                 estructura = estructura + "<select class='form-control' id='" + result[i].NOMBRE_CAMPO + "'>";
                                 for (var j = 0; j < result[i].CONTROL.length; j++) {
@@ -88,6 +84,8 @@ let importarDocumentojs = {
                             if (i + 1 >= result.length) {
                                 estructura = estructura + "</div>";
                             }
+
+                            if ((i + 1) % 3 == 0) estructura = estructura + "</div>";
                         }
                     }
                 }
@@ -100,14 +98,14 @@ let importarDocumentojs = {
 
     },
 
-    GuadarEnBaseDatos: function () {
+    guadarEnBaseDatos: function () {
 
         let dictImportarDocumento = [];
         let intTipoPlantilla = $("#hddlTipoDocumento").val();
         let nombreConmpletoArchivo = $('input[type=file]').val().split('\\').pop();
         let nombreArchivoSinExtension = nombreConmpletoArchivo.split('.')[0];
 
-        $("#Parametros :input").each(function () {
+        $("#ParametrosImportarDocumento :input").each(function () {
             let nombreIdInput = $(this).attr("id");
             let valorInput = $(this).val();
             dictImportarDocumento.push({ key: nombreIdInput, value: valorInput });
@@ -122,11 +120,17 @@ let importarDocumentojs = {
             beforeSend: addLoading("ContenidoWeb"),
             async: true,
             success: function (data) {
-                console.log(data.Value);
                 clearLoading();
-                if (data.Value > 0) {
-                    let pageId = data.Value;
-                    importarDocumentojs.SubirPDF(pageId);
+
+                if (!($('#fileUploadImp').get(0).files.length) == 0) {
+                    if (data.Value > 0) {
+                        let pageId = data.Value;
+                        importarDocumentojs.subirPDF(pageId);
+                    }
+                }
+                else {
+                    bootbox.alert("Se cargó el archivo correctamente", null);
+                    $('#ParametrosImportarDocumento').find('input:text').val('');
                 }
             },
             error: function (data) {
@@ -135,7 +139,7 @@ let importarDocumentojs = {
         });
     },
 
-    SubirPDF: function (pageId) {
+    subirPDF: function (pageId) {
 
         var selectFile = ($("#fileUploadImp"))[0].files[0];
         var dataString = new FormData();
@@ -153,7 +157,7 @@ let importarDocumentojs = {
 
                 if (typeof (data.Value) != "undefined") {
                     bootbox.alert("Se cargó el archivo correctamente", null);
-                    $('#Parametros').find('input:text').val('');
+                    $('#ParametrosImportarDocumento').find('input:text').val('');
                     $("#fileUploadImp").val("");
                 }
                 else {
@@ -167,5 +171,3 @@ let importarDocumentojs = {
         });
     }
 }
-
-

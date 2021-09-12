@@ -4,6 +4,7 @@
 }
 <!-- JAVASCRIPT -->
 <script src="~/Scripts/Documentos/Documento/Index.js"></script>
+<script src="~/Scripts/Documentos/ImportarDocumento/Index.js"></script>
 @Html.Hidden("hhdnOpcionesAcceso", ViewData["OPCIONES_USUARIO"])
 @Html.Hidden("hhdnPerfilUser", ViewData["LOGUEO_PERFIL"])
 
@@ -42,10 +43,10 @@
             </div>
             <div class="x_content">
                 <form id="frmBusqueda" data-parsley-validate class="form-horizontal form-label-left">
-                    <div class="form-bodyBuscar">
-                        <div class="form-group">
-                            <label class="control-label col-md-1" for="hddlTipoDocumento">Plantilla</label>
-                            <div class="col-md-3">
+                    <div class="form-body">
+                        <div class="row">
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                <label for="hddlTipoDocumento">PLANTILLA</label>
                                 @Html.DropDownList("hddlTipoDocumento", (SelectList)ViewBag.TipoDocumento, new { @class = "form-control" })
                             </div>
                         </div>
@@ -83,52 +84,40 @@
             <div class="form-group" id="Resultados">
                 <table id="tblDocumentos" class="table table-striped table-bordered dt-responsive nowrap" cellpadding="0" width="100%"></table>
             </div>
-
             <div id="BotoneraPerfil">
                 <div class="row">
 
                 </div>
             </div>
-
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <a href="#" class="close" data-dismiss="modal">&times;</a>
                 <center><h4 id="ModalTitle">Editar Documento</h4></center>
             </div>
             <input type="hidden" id="hiddenModalTocId" name="hiddenModalTocId" value="" />
-            <div class="modal-body">
-                <div class="container-fluid">
-                    <div id="EditarDocumento">
-
+            <div class="modal-body" style="margin:30px;">
+                <form>
+                    <div class="row" id="EditarDocumento">
                     </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-1">ARCHIVO</label>
-                        <div class="col-md-1">
-                            <input type="checkbox" id="chkUploadEdit" class="form-check-input" value="">
+                    <div class="row">
+                        <div class="col-md-1 col-sm-1 col-xs-12">
+                            <input type="checkbox" id="chkUploadEdit" class="form-check-input" style="height:60px;position:relative" value="">
                         </div>
-
-                    </div>
-                    <div class="form-group">
-                        <div class="col-md-3">
+                        <div class="col-md-4 col-sm-4 col-xs-12">
+                            <label>Archivo</label>
                             <input type="file" name="fileUploadEdit" id="fileUploadEdit" accept="application/pdf">
                         </div>
                     </div>
-                    <div class="x_title" style="font-size:14px">
-                        <div class="clearfix"></div>
-                    </div>
-                    <div class="col-md-11 col-sm-4 col-xs-12">
-                    </div>
-                    <div class="col-md-11 col-sm-4 col-xs-12">
-                        <button id="btnGuardarModal" type="button" class="btn btn-success">Grabar</button>
-                        <button id="btnCancelarPopUP" type="button" data-dismiss="modal" class="btn btn-danger">Cerrar</button>
-                    </div>
-                </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="btnGuardarModal" type="button" class="btn btn-success">Grabar</button>
+                <button id="btnCancelarPopUP" type="button" data-dismiss="modal" class="btn btn-danger">Cerrar</button>
             </div>
         </div>
     </div>

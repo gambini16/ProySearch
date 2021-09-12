@@ -10,6 +10,7 @@ using System.Web.Mvc;
 using CaptchaMvc.HtmlHelpers;
 using Newtonsoft.Json;
 using SearchDocuments.Criptografia;
+using SearchDocuments.Comunes;
 
 namespace SearchDocumentsSiteWeb.Controllers
 {
@@ -42,12 +43,27 @@ namespace SearchDocumentsSiteWeb.Controllers
         [HttpGet]
         public ActionResult LoginEstandar()
         {
-            int intRegAudit = Util.RegistrarAuditoria("Login", "Load", "Ingreso al sistema", "", 0);
-            RefrescarCache();            
-            var usuario = new UsuarioActualEL();
-            ViewBag.CountFail = 0;
-            ViewBag.ErrMessage = "Validation Messgae";
-            return View("LoginEstandar", usuario);
+            Session.Clear();
+
+            string strFlagRedirect = ConfigurationManager.AppSettings["RedirectServer2"].ToString();
+            if (strFlagRedirect == "1")
+            {
+                string strUrl2 = ConfigurationManager.AppSettings["UrlServer2"].ToString();
+                return Redirect(strUrl2);
+            }
+            else {
+                int intRegAudit = Util.RegistrarAuditoria("Login", "Load", "Ingreso al sistema", "", 0);
+
+                RefrescarCache();
+                var usuario = new UsuarioActualEL();
+                ViewBag.CountFail = 0;
+                ViewBag.ErrMessage = "Validation Messgae";
+                return View("LoginEstandar", usuario);
+            }
+
+
+                
+            
         }
 
         [HttpPost]
@@ -65,81 +81,116 @@ namespace SearchDocumentsSiteWeb.Controllers
                 }
                 else
                 {
-                    ISeguridadBL objBL = new SeguridadBL();
-                    Tbl_users objUsuario = new Tbl_users();
-                    objUsuario = objBL.ObtenerNombreUsuario(strUsuario);
-
-                    if (objUsuario != null)
+                    //Code for validating the CAPTCHA
+                    if (!this.IsCaptchaValid(""))
                     {
-                        switch (objUsuario.CH_ESTADO_USU)
+                        ViewBag.error = "El código Captcha ingresado es incorrecto.";
+                        //Auditoria
+                        //Util.RegistrarAuditoria("Login", "Click", "El código Captcha ingresado es incorrecto.", users.LOGIN_USUARIO, 0);                        
+                        Util.RegistrarAuditoriaDS(null, string.Empty, 0, Util.EventName.LoginOk.ToString());
+                        return View("LoginEstandar", users);
+                    }
+                    else {
+                        ISeguridadBL objBL = new SeguridadBL();
+                        Tbl_users objUsuario = new Tbl_users();
+                        objUsuario = objBL.ObtenerNombreUsuario(strUsuario);
+
+                       
+
+
+
+                        if (objUsuario != null)
                         {
-                            case "1":
-                                ViewBag.ErrorMessage = "El usuario :" + objUsuario.VC_USUARIO_USU + " se encuentra inactivo.";
-                                intContador = 0;
-                                ViewBag.CountFail = intContador;
-                                break;
-                            case "0"://Usuario activo
-                                //string strClaveEncriptada = Encriptador.Encriptar(users.LOGIN_PASSWORD);
-
-                                string strPwd = Cryptography.Decrypt(objUsuario.VC_PWD_USU, objUsuario.IN_CODIGO_USU.ToString());
-                                if (strPwd == users.LOGIN_PASSWORD)
-                                {
-                                    SesionActual.Current.IN_CODIGO_PRF = objUsuario.IN_CODIGO_PRF;
-                                    SesionActual.Current.IN_CODIGO_USU = objUsuario.IN_CODIGO_USU;
-
-                                    SesionActual.Current.VC_DATAENCRY = EncryptionHelper.Encrypt(objUsuario.IN_CODIGO_USU.ToString());
-
-                                    SesionActual.Current.NOMBRE_COMPLETO = string.Format("{0} {1}", objUsuario.VC_NOMBRE_USU, objUsuario.VC_APELLIDO_USU);
-                                    SesionActual.Current.PERFIL = objUsuario.IN_CODIGO_PRF.ToString();
-                                    SesionActual.Current.OPCIONES_USUARIO = "";
-                                    SesionActual.Current.AVATAR = "";
-                                    SesionActual.Current.SOCIEDAD_NOMBRE = "";
-                                    SesionActual.Current.PERFIL_NOMBRE = objUsuario.NOM_PERFIL;
-
-                                    List<OpcionEL> lstOpciones = objBL.obtenerOpcionesPerfil(objUsuario.IN_CODIGO_PRF);
-                                    var json = JsonConvert.SerializeObject(lstOpciones);
-                                    SesionActual.Current.OPCIONES_USUARIO = json;
-                                    ViewData["OPCIONES_USUARIO"] = SesionActual.Current.OPCIONES_USUARIO;
-                                    /************************************/
-                                    Util.RegistrarAuditoria("Login", "Click", "Ingreso al sistema Clave Correcta", objUsuario.VC_USUARIO_USU, objUsuario.IN_CODIGO_USU);
-                                    return RedirectToAction("Index", "Home");
-                                }
-                                else
-                                {
-                                    users.CONTADOR_INTENTOS++;
-                                    ViewBag.ErrorMessage = "La contraseña ingresada es incorrecta.";
-                                    intContador = Convert.ToInt32(Form["hidCountFail"]);
-                                    intContador++;
+                            switch (objUsuario.CH_ESTADO_USU)
+                            {
+                                case "1":
+                                    ViewBag.ErrorMessage = "El usuario :" + objUsuario.VC_USUARIO_USU + " se encuentra inactivo.";
+                                    intContador = 0;
                                     ViewBag.CountFail = intContador;
+                                    break;
+                                case "0"://Usuario activo
+                                    //string strClaveEncriptada = Encriptador.Encriptar(users.LOGIN_PASSWORD);
 
-                                    Util.RegistrarAuditoria("Login", "Click", "Ingreso al sistema Clave Incorrecta", objUsuario.VC_USUARIO_USU, objUsuario.IN_CODIGO_USU);
-
-
-                                    if (intContador == intMaxFailLogin)
+                                    string strPwd = Cryptography.Decrypt(objUsuario.VC_PWD_USU, objUsuario.IN_CODIGO_USU.ToString());
+                                    if (strPwd == users.LOGIN_PASSWORD)
                                     {
-                                        ViewBag.CountFail = 0;
-                                        if (objUsuario.IN_CODIGO_USU != 1)
-                                        {
-                                            this.bloquear_usuario(objUsuario.IN_CODIGO_USU);
-                                        }
+                                        SesionActual.Current.IN_CODIGO_PRF = objUsuario.IN_CODIGO_PRF;
+                                        SesionActual.Current.IN_CODIGO_USU = objUsuario.IN_CODIGO_USU;
+
+                                        SesionActual.Current.VC_DATAENCRY = EncryptionHelper.Encrypt(objUsuario.IN_CODIGO_USU.ToString());
+
+                                        SesionActual.Current.NOMBRE_COMPLETO = string.Format("{0} {1}", objUsuario.VC_NOMBRE_USU, objUsuario.VC_APELLIDO_USU);
+                                        SesionActual.Current.PERFIL = objUsuario.IN_CODIGO_PRF.ToString();
+                                        SesionActual.Current.OPCIONES_USUARIO = "";
+                                        SesionActual.Current.AVATAR = "";
+                                        SesionActual.Current.SOCIEDAD_NOMBRE = "";
+                                        SesionActual.Current.PERFIL_NOMBRE = objUsuario.NOM_PERFIL;
+
+                                        List<OpcionEL> lstOpciones = objBL.obtenerOpcionesPerfil(objUsuario.IN_CODIGO_PRF);
+                                        var json = JsonConvert.SerializeObject(lstOpciones);
+                                        SesionActual.Current.OPCIONES_USUARIO = json;
+                                        ViewData["OPCIONES_USUARIO"] = SesionActual.Current.OPCIONES_USUARIO;
+                                        /************************************/
+
+                                        //Auditoria
+                                        Util.RegistrarAuditoria("Login", "Click", "Ingreso al sistema Clave Correcta", objUsuario.VC_USUARIO_USU, objUsuario.IN_CODIGO_USU);
+                                        Util.RegistrarAuditoriaDS(null, string.Empty, objUsuario.IN_CODIGO_USU, Util.EventName.LoginOk.ToString());
+
+                                        return RedirectToAction("Index", "Home");
                                     }
-                                    //return Json(new { strRespuesta = 2 }, JsonRequestBehavior.AllowGet);//Credenciales incorrectas
-                                }
-                                break;
-                            default:
-                                ViewBag.ErrorMessage = "El usuario ingresado es incorrecto.";
-                                intContador = 0;
-                                ViewBag.CountFail = intContador;
-                                break;
+                                    else
+                                    {
+                                        //Auditoria
+                                        //Util.RegistrarAuditoria("Login", "Click", "Ingreso al sistema Clave Incorrecta", objUsuario.VC_USUARIO_USU, objUsuario.IN_CODIGO_USU);
+                                        Util.RegistrarAuditoriaDS(null, string.Empty, objUsuario.IN_CODIGO_USU, Util.EventName.LoginFailed.ToString());
+
+                                        users.CONTADOR_INTENTOS++;
+                                        ViewBag.ErrorMessage = "La contraseña ingresada es incorrecta.";
+                                        intContador = Convert.ToInt32(Form["hidCountFail"]);
+                                        intContador++;
+                                        ViewBag.CountFail = intContador;
+
+                                        
+
+
+                                        if (intContador == intMaxFailLogin)
+                                        {
+                                            ViewBag.CountFail = 0;
+                                            if (objUsuario.IN_CODIGO_USU != 1)
+                                            {
+                                                this.bloquear_usuario(objUsuario.IN_CODIGO_USU);
+                                            }
+                                        }
+                                        //return Json(new { strRespuesta = 2 }, JsonRequestBehavior.AllowGet);//Credenciales incorrectas
+                                    }
+                                    break;
+                                default:
+                                    ViewBag.ErrorMessage = "El usuario ingresado es incorrecto.";
+                                    intContador = 0;
+                                    ViewBag.CountFail = intContador;
+                                    break;
+                            }
                         }
+                        else
+                        {
+                            intContador = 0;
+                            ViewBag.CountFail = intContador;
+                            ViewBag.ErrorMessage = "El usuario ingresado es incorrecto.";
+
+
+                            //Auditoria
+                            //Util.RegistrarAuditoria("Login", "Click", "El usuario ingresado es incorrecto.", users.LOGIN_USUARIO, 0);
+                            Util.RegistrarAuditoriaDS(null, string.Empty, 0, Util.EventName.LoginFailed.ToString());
+
+                            
+                        }
+
                     }
-                    else
-                    {
-                        intContador = 0;
-                        ViewBag.CountFail = intContador;
-                        ViewBag.ErrorMessage = "El usuario ingresado es incorrecto.";
-                        Util.RegistrarAuditoria("Login", "Click", "El usuario ingresado es incorrecto.", users.LOGIN_USUARIO, 0);
-                    }
+
+
+
+
+
                 }
 
             }

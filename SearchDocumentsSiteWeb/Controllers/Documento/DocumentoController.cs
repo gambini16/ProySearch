@@ -65,7 +65,7 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
             vLstfiltro = objFiltroBL.fn_Get_Campos(intTipoPlantilla);
             string select = String.Empty;
             string filtro = String.Empty;
-            filtro = "where ";
+            filtro = "where 1=1 ";
             int contador = 0;
             string[] words = parametros.Split('|');
 
@@ -73,6 +73,9 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
             {
                 foreach (var item in vLstfiltro)
                 {
+                    string strValue = "";
+                    int intIndeOf = 0;
+
                     if (item.TIPO_DATO.ToUpper().Equals("DATETIME"))
                     {
                         select = select + "convert(varchar,t." + item.NOMBRE_CAMPO + ",103) as " + item.NOMBRE_CAMPO + ",";
@@ -85,17 +88,39 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
                     {
                         if (item.TIPO_DATO.ToUpper().Equals("DATETIME"))
                         {
-                            filtro = filtro + " (convert(varchar,t." + item.NOMBRE_CAMPO + ",103)='" + words[contador] + "' or '" + words[contador] + "'='')";
+                            filtro = filtro + " AND (convert(varchar,t." + item.NOMBRE_CAMPO + ",103)='" + words[contador] + "' or '" + words[contador] + "'='')";
                         }
                         else
                         {
                             if (item.TIPO_CONTROL.Trim().Equals("0"))
                             {
-                                filtro = filtro + " (t." + item.NOMBRE_CAMPO + "='" + words[contador] + "' or '" + words[contador] + "'='')";
+                                //txt
+                                strValue = words[contador];
+                                strValue = strValue.Replace("'", "''");
+                                strValue = strValue.Replace("--Seleccione--", "");
+                                intIndeOf = strValue.IndexOf("*");
+
+                                if (strValue.Length != 0) {
+                                    if (intIndeOf >= 0)
+                                    {
+                                        filtro = filtro + " AND (t." + item.NOMBRE_CAMPO + " like '" + strValue.Replace("*", "%") + "')";
+                                    }
+                                    else
+                                    {
+                                        filtro = filtro + " AND (t." + item.NOMBRE_CAMPO + "='" + strValue + "')";
+                                    }
+                                }
                             }
                             else
                             {
-                                filtro = filtro + " (t." + item.NOMBRE_CAMPO + "='" + words[contador] + "' or '" + words[contador] + "'='--Seleccione--')";
+                                //combo                              
+                                strValue = words[contador];
+                                strValue = strValue.Replace("'", "''");
+                                strValue = strValue.Replace("--Seleccione--", "");
+                                if (strValue.Length != 0)
+                                {
+                                    filtro = filtro + " AND (t." + item.NOMBRE_CAMPO + "='" + strValue + "')";
+                                }
                             }
                         }
                         contador = contador + 1;
@@ -104,22 +129,53 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
                     {
                         if (item.TIPO_DATO.ToUpper().Equals("DATETIME"))
                         {
-                            filtro = filtro + " AND (convert(varchar,t." + item.NOMBRE_CAMPO + ",103)='" + words[contador] + "' or '" + words[contador] + "'='')";
+                            strValue = words[contador];
+                            if (strValue.Length != 0)
+                            {
+                                filtro = filtro + " AND (convert(varchar,t." + item.NOMBRE_CAMPO + ",103)='" + strValue + "')";
+                            }
+
+                            //filtro = filtro + " AND (convert(varchar,t." + item.NOMBRE_CAMPO + ",103)='" + words[contador] + "' or '" + words[contador] + "'='')";
                         }
                         else
                         {
+                            
                             if (item.TIPO_CONTROL.Trim().Equals("0"))
                             {
-                                filtro = filtro + " AND (t." + item.NOMBRE_CAMPO + "='" + words[contador] + "' or '" + words[contador] + "'='')";
+                                //txt
+                                strValue = words[contador];
+                                strValue = strValue.Replace("'", "''");
+                                strValue = strValue.Replace("--Seleccione--", "");
+                                intIndeOf = strValue.IndexOf("*");
+
+                                if (strValue.Length != 0) {
+                                    if (intIndeOf >= 0)
+                                    {
+                                        filtro = filtro + " AND (t." + item.NOMBRE_CAMPO + " like '" + strValue.Replace("*", "%") + "')";
+                                    }
+                                    else
+                                    {
+                                        filtro = filtro + " AND (t." + item.NOMBRE_CAMPO + "='" + strValue + "')";
+                                    }
+                                }
                             }
                             else
                             {
-                                filtro = filtro + " AND (t." + item.NOMBRE_CAMPO + "='" + words[contador] + "' or '" + words[contador] + "'='--Seleccione--')";
-                            }
+                                //combo
+                                strValue = words[contador];
+                                strValue = strValue.Replace("'", "''");
+                                strValue = strValue.Replace("--Seleccione--", "");
+                                if (strValue.Length != 0) {
+                                    filtro = filtro + " AND (t." + item.NOMBRE_CAMPO + "='" + strValue + "')";
+                                }
+                            }                            
                         }
                         contador = contador + 1;
                     }
                 }
+
+                if (filtro == "where ") filtro = "where 1=1 ";
+
                 DataTable dt = new DataTable();
                 dt = objDocumentoBL.ObtenerListadoDinamico(select, filtro, objDocumentoEL.TABLA);
                 dynamic listado = new ExpandoObject();

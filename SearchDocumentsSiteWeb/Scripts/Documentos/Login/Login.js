@@ -28,55 +28,22 @@ $(document).ready(function () {
 
     $('#htxtLoginUsuario').focus();
 
-    /* BOTONES */
-    $("#hbtnLogin").click(function (event) {
+    $("#btnInicio").click(function () {
         var strLogin = $("#htxtLoginUsuario").val();
         var strPwd = $("#htxtLoginPwd").val();
-        event.preventDefault();
-        $.ajax({
-            cache: false,
-            type: "POST",
-            url: BASE_APP_URL + "Logeo/UsuaAutenticacion",
-            data: {
-                strLogin: strLogin,
-                strPwd: strPwd
-            },
-            dataType: "json",
-            beforeSend: addLoading("ContenidoLogin"),
-            success: function (result) {
-                clearLoading();
-                var obj = JSON.parse(result.strRespuesta)
-                if (obj == "0") {
-                    bootbox.alert('Usuario Inactivo', function () {
-                        $("#htxtLoginUsuario").val($("#htxtLoginUsuario").val());
-                        $("#htxtLoginPwd").val("");
-                    });
-                }
-                else if (obj == "1") {
-                    var strLoginUsuario = $("#htxtLoginUsuario").val();
-                    var url = BASE_APP_URL + 'Home/Index';
-                    window.location.href = url;
-                }
-                else if (obj == "2") {
-                    bootbox.alert('La clave es incorrecta.', function () {
-                        $("#htxtLoginUsuario").val($("#htxtLoginUsuario").val());
-                        $("#htxtLoginPwd").val("");
-                    });
-                }
-                else if (obj == "3") {
-                    bootbox.alert('Usuario bloqueado', function () {
-                        $("#htxtLoginUsuario").val($("#htxtLoginUsuario").val());
-                        $("#htxtLoginPwd").val("");
-                    });
-                }
-                else {
-                    bootbox.alert('Error en la consulta.' + obj, null);
-                }
-            },
-            error: function () {
-                bootbox.alert(ObtenerMensaje("028"), null);
-            }
-        });
-    });
+        var strCodeCapt = $("#CaptchaInputText").val();
+
+
+        if (strLogin.length == 0 && strPwd.length == 0) {
+            bootbox.alert('El usuario y contraseña es un campo obligatorio', null);
+            return false;
+        }
+
+        if (strCodeCapt.length == 0) {
+            bootbox.alert('el codigo Captcha es un campo obligatorio', null);
+            return false;
+        }
+    });   
+    
 
 });

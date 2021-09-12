@@ -1,4 +1,5 @@
-﻿
+﻿@using CaptchaMvc.HtmlHelpers
+
 @model SearchDocuments.Entidades.UsuarioActualEL
 
 
@@ -91,6 +92,17 @@
                                         ¿Olvidaste tu contraseña?
                                     </a>
                                 </center>
+                            </div>
+
+                            <div class="login-panel panel panel-default">
+
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">Ingrese Código Captcha</h3>
+                                    @Html.Captcha("Actualizar", "Introduzca el texto mostrado en la imagen.", 4, "Campo obrigatorio.", false)
+                                    <br />
+                                    <p class="alert-error">@ViewBag.error</p>
+                                    <p class="alert-error">@ViewBag.ErrorMessage</p>
+                                </div>
                             </div>
 
 
