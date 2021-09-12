@@ -1,0 +1,9 @@
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Datos\bin\Release\SearchDocuments.Datos.dll
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Datos\bin\Release\SearchDocuments.Datos.pdb
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Datos\bin\Release\SearchDocuments.Entidades.dll
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Datos\bin\Release\SearchDocuments.Entidades.pdb
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Datos\obj\Release\SearchDocuments.Datos.csprojAssemblyReference.cache
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Datos\obj\Release\SearchDocuments.Datos.csproj.CoreCompileInputs.cache
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Datos\obj\Release\SearchDocuments.Datos.csproj.CopyComplete
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Datos\obj\Release\SearchDocuments.Datos.dll
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Datos\obj\Release\SearchDocuments.Datos.pdb

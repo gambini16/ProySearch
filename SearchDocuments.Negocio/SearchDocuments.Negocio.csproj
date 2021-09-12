@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{313E3CAB-7F82-425A-864A-BA76C9AE7D26}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SearchDocuments.Negocio</RootNamespace>
+    <AssemblyName>SearchDocuments.Negocio</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Auditoria\AuditoriaBL.cs" />
+    <Compile Include="Auditoria\IAuditoriaBL.cs" />
+    <Compile Include="Documento\DocumentoBL.cs" />
+    <Compile Include="Documento\IDocumentoBL.cs" />
+    <Compile Include="Filtro\FiltroBL.cs" />
+    <Compile Include="Filtro\IFiltroBL.cs" />
+    <Compile Include="ImportarDocumento\IImportarDocumentoBL.cs" />
+    <Compile Include="ImportarDocumento\ImportarDocumentoBL.cs" />
+    <Compile Include="Modulo\IModuloBL.cs" />
+    <Compile Include="Modulo\ModuloBL.cs" />
+    <Compile Include="Parametro\IParametroBL.cs" />
+    <Compile Include="Parametro\ParametroBL.cs" />
+    <Compile Include="Perfil\IPerfilBL.cs" />
+    <Compile Include="Perfil\PerfilBL.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SeguridadSistema\ISeguridadBL.cs" />
+    <Compile Include="SeguridadSistema\SeguridadBL.cs" />
+    <Compile Include="Usuario\IUsuarioBL.cs" />
+    <Compile Include="Usuario\UsuarioBL.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SearchDocuments.Datos\SearchDocuments.Datos.csproj">
+      <Project>{b1ef5bef-3e7b-4bb6-84be-f0f640ce6fd4}</Project>
+      <Name>SearchDocuments.Datos</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SearchDocuments.Entidades\SearchDocuments.Entidades.csproj">
+      <Project>{72ddfa1c-a767-46fd-984e-ada3fdb7cc74}</Project>
+      <Name>SearchDocuments.Entidades</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

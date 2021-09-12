@@ -1,0 +1,23 @@
+D:\Cesar\DocumentSecurity\Desarrollo\Demo01\3 - Contrucción\Source\ConsultaDocumentos\SearchDocuments.Entidades\bin\Debug\SearchDocuments.Entidades.dll
+D:\Cesar\DocumentSecurity\Desarrollo\Demo01\3 - Contrucción\Source\ConsultaDocumentos\SearchDocuments.Entidades\bin\Debug\SearchDocuments.Entidades.pdb
+D:\Cesar\DocumentSecurity\Desarrollo\Demo01\3 - Contrucción\Source\ConsultaDocumentos\SearchDocuments.Entidades\obj\Debug\SearchDocuments.Entidades.csproj.CoreCompileInputs.cache
+D:\Cesar\DocumentSecurity\Desarrollo\Demo01\3 - Contrucción\Source\ConsultaDocumentos\SearchDocuments.Entidades\obj\Debug\SearchDocuments.Entidades.dll
+D:\Cesar\DocumentSecurity\Desarrollo\Demo01\3 - Contrucción\Source\ConsultaDocumentos\SearchDocuments.Entidades\obj\Debug\SearchDocuments.Entidades.pdb
+D:\Cesar\DocumentSecurity\Desarrollo\Demo01\3 - Contrucción\Source\ConsultaDocumentos\SearchDocuments.Entidades\obj\Debug\SearchDocuments.Entidades.csprojAssemblyReference.cache
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Entidades\bin\Debug\SearchDocuments.Entidades.dll
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Entidades\bin\Debug\SearchDocuments.Entidades.pdb
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Entidades\obj\Debug\SearchDocuments.Entidades.csproj.CoreCompileInputs.cache
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Entidades\obj\Debug\SearchDocuments.Entidades.dll
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Entidades\obj\Debug\SearchDocuments.Entidades.pdb
+C:\Users\Manuel\Desktop\gambini_desa\ConsultaDocumentos\SearchDocuments.Entidades\bin\Debug\SearchDocuments.Entidades.dll
+C:\Users\Manuel\Desktop\gambini_desa\ConsultaDocumentos\SearchDocuments.Entidades\bin\Debug\SearchDocuments.Entidades.pdb
+C:\Users\Manuel\Desktop\gambini_desa\ConsultaDocumentos\SearchDocuments.Entidades\obj\Debug\SearchDocuments.Entidades.csprojAssemblyReference.cache
+C:\Users\Manuel\Desktop\gambini_desa\ConsultaDocumentos\SearchDocuments.Entidades\obj\Debug\SearchDocuments.Entidades.csproj.CoreCompileInputs.cache
+C:\Users\Manuel\Desktop\gambini_desa\ConsultaDocumentos\SearchDocuments.Entidades\obj\Debug\SearchDocuments.Entidades.dll
+C:\Users\Manuel\Desktop\gambini_desa\ConsultaDocumentos\SearchDocuments.Entidades\obj\Debug\SearchDocuments.Entidades.pdb
+E:\DESA_RAFITA_2021\ConsultaDocumentos\SearchDocuments.Entidades\bin\Debug\SearchDocuments.Entidades.dll
+E:\DESA_RAFITA_2021\ConsultaDocumentos\SearchDocuments.Entidades\bin\Debug\SearchDocuments.Entidades.pdb
+E:\DESA_RAFITA_2021\ConsultaDocumentos\SearchDocuments.Entidades\obj\Debug\SearchDocuments.Entidades.csproj.CoreCompileInputs.cache
+E:\DESA_RAFITA_2021\ConsultaDocumentos\SearchDocuments.Entidades\obj\Debug\SearchDocuments.Entidades.dll
+E:\DESA_RAFITA_2021\ConsultaDocumentos\SearchDocuments.Entidades\obj\Debug\SearchDocuments.Entidades.pdb
+E:\DESA_RAFITA_2021\ConsultaDocumentos\SearchDocuments.Entidades\obj\Debug\SearchDocuments.Entidades.csprojAssemblyReference.cache

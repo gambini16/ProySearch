@@ -1,0 +1,51 @@
+D:\Cesar\DocumentSecurity\Desarrollo\Demo01\3 - Contrucción\Source\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\SearchDocuments.Datos.dll
+D:\Cesar\DocumentSecurity\Desarrollo\Demo01\3 - Contrucción\Source\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\SearchDocuments.Datos.pdb
+D:\Cesar\DocumentSecurity\Desarrollo\Demo01\3 - Contrucción\Source\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\SearchDocuments.Entidades.dll
+D:\Cesar\DocumentSecurity\Desarrollo\Demo01\3 - Contrucción\Source\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\SearchDocuments.Entidades.pdb
+D:\Cesar\DocumentSecurity\Desarrollo\Demo01\3 - Contrucción\Source\ConsultaDocumentos\SearchDocuments.Datos\obj\Debug\SearchDocuments.Datos.csprojAssemblyReference.cache
+D:\Cesar\DocumentSecurity\Desarrollo\Demo01\3 - Contrucción\Source\ConsultaDocumentos\SearchDocuments.Datos\obj\Debug\SearchDocuments.Datos.csproj.CoreCompileInputs.cache
+D:\Cesar\DocumentSecurity\Desarrollo\Demo01\3 - Contrucción\Source\ConsultaDocumentos\SearchDocuments.Datos\obj\Debug\SearchDocuments.Datos.csproj.CopyComplete
+D:\Cesar\DocumentSecurity\Desarrollo\Demo01\3 - Contrucción\Source\ConsultaDocumentos\SearchDocuments.Datos\obj\Debug\SearchDocuments.Datos.dll
+D:\Cesar\DocumentSecurity\Desarrollo\Demo01\3 - Contrucción\Source\ConsultaDocumentos\SearchDocuments.Datos\obj\Debug\SearchDocuments.Datos.pdb
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\SearchDocuments.Datos.dll
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\SearchDocuments.Datos.pdb
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\SearchDocuments.Entidades.dll
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\SearchDocuments.Entidades.pdb
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Datos\obj\Debug\SearchDocuments.Datos.csprojAssemblyReference.cache
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Datos\obj\Debug\SearchDocuments.Datos.csproj.CoreCompileInputs.cache
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Datos\obj\Debug\SearchDocuments.Datos.csproj.CopyComplete
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Datos\obj\Debug\SearchDocuments.Datos.dll
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Datos\obj\Debug\SearchDocuments.Datos.pdb
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\SearchDocuments.Comunes.dll
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\log4net.dll
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\SearchDocuments.Comunes.pdb
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\log4net.xml
+C:\Users\Manuel\Desktop\gambini_desa\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\SearchDocuments.Datos.dll
+C:\Users\Manuel\Desktop\gambini_desa\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\SearchDocuments.Datos.pdb
+C:\Users\Manuel\Desktop\gambini_desa\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\SearchDocuments.Comunes.dll
+C:\Users\Manuel\Desktop\gambini_desa\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\SearchDocuments.Entidades.dll
+C:\Users\Manuel\Desktop\gambini_desa\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\log4net.dll
+C:\Users\Manuel\Desktop\gambini_desa\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\SearchDocuments.Entidades.pdb
+C:\Users\Manuel\Desktop\gambini_desa\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\SearchDocuments.Comunes.pdb
+C:\Users\Manuel\Desktop\gambini_desa\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\log4net.xml
+C:\Users\Manuel\Desktop\gambini_desa\ConsultaDocumentos\SearchDocuments.Datos\obj\Debug\SearchDocuments.Datos.csprojAssemblyReference.cache
+C:\Users\Manuel\Desktop\gambini_desa\ConsultaDocumentos\SearchDocuments.Datos\obj\Debug\SearchDocuments.Datos.csproj.CoreCompileInputs.cache
+C:\Users\Manuel\Desktop\gambini_desa\ConsultaDocumentos\SearchDocuments.Datos\obj\Debug\SearchDocuments.Datos.csproj.CopyComplete
+C:\Users\Manuel\Desktop\gambini_desa\ConsultaDocumentos\SearchDocuments.Datos\obj\Debug\SearchDocuments.Datos.dll
+C:\Users\Manuel\Desktop\gambini_desa\ConsultaDocumentos\SearchDocuments.Datos\obj\Debug\SearchDocuments.Datos.pdb
+E:\DESA_RAFITA_2021\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\SearchDocuments.Datos.dll
+E:\DESA_RAFITA_2021\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\SearchDocuments.Datos.pdb
+E:\DESA_RAFITA_2021\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\SearchDocuments.Comunes.dll
+E:\DESA_RAFITA_2021\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\SearchDocuments.Entidades.dll
+E:\DESA_RAFITA_2021\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\log4net.dll
+E:\DESA_RAFITA_2021\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\SearchDocuments.Entidades.pdb
+E:\DESA_RAFITA_2021\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\SearchDocuments.Comunes.pdb
+E:\DESA_RAFITA_2021\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\log4net.xml
+E:\DESA_RAFITA_2021\ConsultaDocumentos\SearchDocuments.Datos\obj\Debug\SearchDocuments.Datos.csprojAssemblyReference.cache
+E:\DESA_RAFITA_2021\ConsultaDocumentos\SearchDocuments.Datos\obj\Debug\SearchDocuments.Datos.csproj.CoreCompileInputs.cache
+E:\DESA_RAFITA_2021\ConsultaDocumentos\SearchDocuments.Datos\obj\Debug\SearchDocuments.Datos.csproj.CopyComplete
+E:\DESA_RAFITA_2021\ConsultaDocumentos\SearchDocuments.Datos\obj\Debug\SearchDocuments.Datos.dll
+E:\DESA_RAFITA_2021\ConsultaDocumentos\SearchDocuments.Datos\obj\Debug\SearchDocuments.Datos.pdb
+E:\DESA_RAFITA_2021\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\itextsharp.dll
+E:\DESA_RAFITA_2021\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\BouncyCastle.Crypto.dll
+E:\DESA_RAFITA_2021\ConsultaDocumentos\SearchDocuments.Datos\bin\Debug\itextsharp.xml

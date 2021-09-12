@@ -1,0 +1,6 @@
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Entidades\bin\Release\SearchDocuments.Entidades.dll
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Entidades\bin\Release\SearchDocuments.Entidades.pdb
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Entidades\obj\Release\SearchDocuments.Entidades.csprojAssemblyReference.cache
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Entidades\obj\Release\SearchDocuments.Entidades.csproj.CoreCompileInputs.cache
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Entidades\obj\Release\SearchDocuments.Entidades.dll
+C:\Users\Cesar\Desktop\ConsultaDocumentos\SearchDocuments.Entidades\obj\Release\SearchDocuments.Entidades.pdb
