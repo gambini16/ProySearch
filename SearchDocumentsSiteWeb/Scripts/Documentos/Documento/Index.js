@@ -477,5 +477,3 @@ function IsFileUploadFill() {
 
     return isOk;
 }
-
-function test() { }
