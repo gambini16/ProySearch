@@ -1,5 +1,10 @@
 ﻿var GcolDTFile2 = '<img class="btnPdf" title="Ver" src="' + "../Content/images/pdf.png" + '"/>&nbsp;';
-const constBtnEditar = '<img class="btnEditar" title="Ver" src="' + "../Content/images/edit.png" + '"/>'
+var GcolDTFile2Bloqueado = '<img class="btnPdfBloqueado" title="Ver" src="' + "../Content/images/VerPDFBloqueado.png" + '"/>&nbsp;';
+const constBtnEditar = '<img class="btnEditar" title="Editar" src="' + "../Content/images/edit.png" + '"/>&nbsp;'
+const constBtnEditarBloqueado = '<img class="btnEditarBloqueado" title="Editar" src="' + "../Content/images/EditarBloqueado.png" + '"/>&nbsp;';
+const constBtnEliminar = '<img class="btnEliminar" title="Eliminar" src="' + "../Content/images/delete.png" + '"/>'
+const constBtnEliminarBloqueado = '<img class="btnEliminarBloqueado" title="Eliminar" src="' + "../Content/images/DeleteBloqueado.png" + '"/>';
+
 let strMensajeValidacion = '';
 var table1 = $('#tblDocumentos').DataTable();
 
@@ -29,7 +34,6 @@ function ParametrosReadDocumento() {
 }
 
 function Index() {
-    //                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         table.destroy();
     $('#tblDocumentos').empty();
     //Init();
     $.ajax({
@@ -45,27 +49,32 @@ function Index() {
             var col = [];
             var jsonObj = [];
 
+            let itemCheck = {};
+            itemCheck["title"] = "<center><input type='checkbox'' id='checkCabecera' ></center>";
+            itemCheck["render"] = function () { return '<center><input type="checkbox" name="active" class="editor-active"></center>' };
+            jsonObj.push(itemCheck);
+
             var item = {};
-            item["title"] = "Ver";
-            item["render"] = function () { return '<center>' + GcolDTFile2 + constBtnEditar + '</center>' };
+            item["title"] = "<center>Ver</center>";
+            item["render"] = function () { return construirAccionesDatatable() };
             jsonObj.push(item);
-            for (var i = 0; i < data.length; i++) {
+            for (var i = 0; i < data.listado.length; i++) {
                 var item = {}
-                item["title"] = data[i].Key.valueOf();
-                item["data"] = data[i].Key.valueOf();
+                item["title"] = data.listado[i].Key.valueOf();
+                item["data"] = data.listado[i].Key.valueOf();
                 jsonObj.push(item);
             }
 
             var jsonData = []
-            if (data.length > 0) {
-                for (var j = 0; j < data[0].Value.length; j++) {
+            if (data.listado.length > 0) {
+                for (var j = 0; j < data.listado[0].Value.length; j++) {
                     var item2 = {}
-                    for (var i = 0; i < data.length; i++) {
-                        if (data[i].Value.valueOf()[j] == null) {
-                            item2[data[i].Key.valueOf()] = "";
+                    for (var i = 0; i < data.listado.length; i++) {
+                        if (data.listado[i].Value.valueOf()[j] == null) {
+                            item2[data.listado[i].Key.valueOf()] = "";
                         }
                         else {
-                            item2[data[i].Key.valueOf()] = data[i].Value.valueOf()[j].valueOf();
+                            item2[data.listado[i].Key.valueOf()] = data.listado[i].Value.valueOf()[j].valueOf();
                         }
                     }
                     jsonData.push(item2);
@@ -77,11 +86,12 @@ function Index() {
 
             table1 = $('#tblDocumentos').DataTable({
                 "scrollX": true,
-                //"dom": GfooterDT,
+                "dom": GfooterDT,
+                searching: false,
                 bFilter: false,
                 "bSort": false,
                 "bDestroy": true,
-                //"info": true,
+                "info": false,
                 "language": {
                     "info": "Mostrando _START_ a _END_ de un total de  _TOTAL_ registros"
                 },
@@ -94,17 +104,16 @@ function Index() {
                 }
             });
 
-            $("#tblDocumentos tbody").on('click', 'tr', function (event) {
-                event.preventDefault();
-                $("#tblDocumentos tbody tr").removeClass('row_selected');
-                $(this).addClass('row_selected');
-            });
+            if (data.cantidadRegistros > 0) {
+                document.getElementById("cantidadRegistros").innerHTML = "Cantidad de Registros: " + data.cantidadRegistros;
+                $("#seccionBotones").show();
+            }
 
             $('#tblDocumentos tbody').on("click", 'img.btnPdf', function (event) {
                 event.preventDefault();
                 var $this = $(this);
                 var row = $this.closest("tr");
-                var intCodigoFile = row.find('td:eq(1)').text();
+                var intCodigoFile = row.find('td:eq(2)').text();
                 f_open_popup_pdf(intCodigoFile);
 
                 //AbrirPopUpPDF(intCodigoFile);
@@ -114,10 +123,8 @@ function Index() {
                 event.preventDefault();
                 var $this = $(this);
                 var row = $this.closest("tr");
-                var intCodigoFile = row.find('td:eq(1)').text();
+                var intCodigoFile = row.find('td:eq(2)').text();
                 let tipoDocumento = $("#hddlTipoDocumento").val();
-
-                //construirControles(tipoDocumento);
 
                 importarDocumentojs.listarControles(tipoDocumento, "EditarDocumento");
                 $("#myModal").modal();
@@ -125,6 +132,47 @@ function Index() {
                 ObtenerDatostablaTd(tipoDocumento, intCodigoFile);
                 inicializarControlesModal();
             });
+
+            $('#tblDocumentos tbody').on("click", 'img.btnEliminar', function (event) {
+                event.preventDefault();
+                var $this = $(this);
+                var row = $this.closest("tr");
+                var intCodigoFile = row.find('td:eq(2)').text();
+
+                ModalConfirm('¿Seguro que desea eliminar el registro?', 'eliminarRegistro(\'' + intCodigoFile + '\');');
+            });
+
+            //$("#checkCabecera").click(function () {
+            //    var blnIsChekedCabecera;
+            //    if ($(this).prop("checked")) {
+            //        blnIsChekedCabecera = true;
+            //    }
+            //    else {
+            //        blnIsChekedCabecera = false;
+            //    }
+
+
+            //    var table = $('#tblDocumentos').DataTable();
+
+            //    var allPages = table.rows().nodes();
+
+            //    $('input[type="checkbox"]', allPages).each(function () {
+            //        if (!$(this).prop('disabled')) {
+            //            if (blnIsChekedCabecera) {
+            //                $(this).prop('checked', true);
+            //            } else {
+            //                $(this).prop('checked', false);
+            //            }
+            //        }
+            //    });
+            //});
+
+            $("#checkCabecera").click(function () {
+                $('input:checkbox').not(this).prop('checked', this.checked);
+            });
+        },
+        error: function () {
+            bootbox.alert("Ocurrió un error.", null);
         }
     });
 }
@@ -151,6 +199,7 @@ $(document).ready(function () {
     $("#btnLimpiar").click(function (event) {
         event.preventDefault();
         $('#Parametros').find('input:text').val('');
+        $('#Parametros').find('select').val('--Seleccione--');
     });
 
     inicializarControlesModal();
@@ -166,17 +215,16 @@ $(document).ready(function () {
     $("#btnGuardarModal").click(function (event) {
         event.preventDefault();
 
-        if ($('#chkUploadEdit').prop('checked')) {
-            if (IsFileUploadFill()) {
-                ActualizarEnBaseDatos();
-            }
-            else {
-                bootbox.alert(strMensajeValidacion, null);
-            }
+        if (validarCampos()) {
+            ModalConfirm('¿Seguro que desea actualizar el documento?', 'ActualizarEnBaseDatos()');
+        } else {
+            bootbox.alert(strMensajeValidacion, null);
         }
-        else{
-            ActualizarEnBaseDatos();
-        }
+
+    });
+
+    $("#hbtnPdf").click(function (event) {
+        descargarPdfs();
     });
 
 });
@@ -267,88 +315,6 @@ function AbrirPopUpPDF(intCodigoFile) {
     });
 }
 
-function construirControles(codTipoDocumento) {
-
-    $.ajax({
-        url: BASE_APP_URL + "Documento/ListarFiltros",
-        type: "POST",
-        data: JSON.stringify({ 'codTipoDocumento': codTipoDocumento }),
-        dataType: "json",
-        traditional: true,
-        contentType: "application/json; charset=utf-8",
-        success: function (result) {
-            var estructura = "";
-            for (var i = 0; i < result.length; i++) {
-                if (i == 0) {
-                    estructura = estructura + "<div class='row'>";
-                    estructura = estructura + "<div class='col-md-4 col-sm-4 col-xs-12'>";
-                    estructura = estructura + "<label class='control-label col-md-1' for='" + result[i].NOMBRE_CAMPO + "'>" + result[i].DATO_COLUMNA + "</label> ";
-
-                    if (result[i].TIPO_CONTROL == "1") {
-                        estructura = estructura + "<select class='form-control' id='" + result[i].NOMBRE_CAMPO + "'>";
-                        for (var j = 0; j < result[i].CONTROL.length; j++) {
-                            estructura = estructura + "<option value='" + result[i].CONTROL[j].DESCRIPCION + "'>" + result[i].CONTROL[j].DESCRIPCION + "</option>";
-                        }
-                        estructura = estructura + "</select>";
-                    }
-                    else {
-                        estructura = estructura + "<input type='text' id='" + result[i].NOMBRE_CAMPO + "' maxlength='" + result[i].LONGITUD_CAMPO + "' class='form-control'/></div>";
-                    }
-
-                    if (i + 1 >= result.length) {
-                        estructura = estructura + "</div>";
-                    }
-                }
-                else {
-                    if (i % 3 == 0) {
-                        estructura = estructura + "<div class='row'>";
-                        estructura = estructura + "<div class='col-md-4 col-sm-4 col-xs-12'>";
-                        estructura = estructura + "<label class='control-label col-md-1' for='" + result[i].NOMBRE_CAMPO + "'>" + result[i].DATO_COLUMNA + "</label> ";
-                        if (result[i].TIPO_CONTROL == "1") {
-                            estructura = estructura + "<select class='form-control' id='" + result[i].NOMBRE_CAMPO + "'>";
-                            for (var j = 0; j < result[i].CONTROL.length; j++) {
-                                estructura = estructura + "<option value='" + result[i].CONTROL[j].DESCRIPCION + "'>" + result[i].CONTROL[j].DESCRIPCION + "</option>";
-                            }
-                            estructura = estructura + "</select></div>";
-                        }
-                        else {
-                            estructura = estructura + "<input type='text' id='" + result[i].NOMBRE_CAMPO + "' maxlength='" + result[i].LONGITUD_CAMPO + "' class='form-control'/></div>";
-                        }
-
-                        if (i + 1 >= result.length) {
-                            estructura = estructura + "</div>";
-                        }
-                    }
-                    else {
-                        estructura = estructura + "<div class='col-md-4 col-sm-4 col-xs-12'>";
-                        estructura = estructura + "<label class='control-label col-md-1' for='" + result[i].NOMBRE_CAMPO + "'>" + result[i].DATO_COLUMNA + "</label> ";
-                        if (result[i].TIPO_CONTROL == "1") {
-                            estructura = estructura + "<select class='form-control' id='" + result[i].NOMBRE_CAMPO + "'>";
-                            for (var j = 0; j < result[i].CONTROL.length; j++) {
-                                estructura = estructura + "<option value='" + result[i].CONTROL[j].DESCRIPCION + "'>" + result[i].CONTROL[j].DESCRIPCION + "</option>";
-                            }
-                            estructura = estructura + "</select>";
-                        }
-                        else {
-                            estructura = estructura + "<input type='text' id='" + result[i].NOMBRE_CAMPO + "' maxlength='" + result[i].LONGITUD_CAMPO + "' class='form-control'/></div>";
-                        }
-                        if (i + 1 >= result.length) {
-                            estructura = estructura + "</div>";
-                        }
-
-                        if ((i + 1) % 3 == 0) estructura = estructura + "</div>";
-                    }
-                }
-            }
-            $("#EditarDocumento").html(estructura);
-        },
-        error: function () {
-            alert("An error has occured!!!");
-        }
-    });
-
-}
-
 function ObtenerDatostablaTd(tipoDocumento, intCodigoFile) {
 
     $.ajax({
@@ -420,8 +386,12 @@ function ActualizarEnBaseDatos() {
 
             if ($('#chkUploadEdit').prop('checked')) {
 
-                let pageId = data.Value;
-                SubirUpdatePDF(pageId);
+                let pageId = data.PageId;
+                let tocId = data.TocId;
+                //alert(pageId);
+                //alert(tocId);
+
+                SubirUpdatePDF(pageId, tocId);
 
             } else {
                 bootbox.alert("Se actualizó el documento de manera correcta", null);
@@ -436,12 +406,13 @@ function ActualizarEnBaseDatos() {
     });
 }
 
-function SubirUpdatePDF(pageId) {
+function SubirUpdatePDF(pageId, tocId) {
 
     var selectFile = ($("#fileUploadEdit"))[0].files[0];
     var dataString = new FormData();
     dataString.append("fileUpload", selectFile);
     dataString.append("pageId", pageId);
+    dataString.append("tocId", tocId);
 
     $.ajax({
         url: BASE_APP_URL + "ImportarDocumento/SubirPDF",
@@ -476,4 +447,162 @@ function IsFileUploadFill() {
     }
 
     return isOk;
+}
+
+function eliminarRegistro(intCodigoFile) {
+
+    $.ajax({
+        type: 'Post',
+        dataType: 'json',
+        cache: false,
+        url: BASE_APP_URL + "Documento/ElminarRegistro",
+        data: { tocId: intCodigoFile },
+        beforeSend: addLoading("ContenidoWeb"),
+        async: true,
+        success: function (data) {
+            clearLoading();
+            if (data.Value == "0") {
+                bootbox.alert("Se eliminó el archivo de manera correcta", null);
+            } else {
+                bootbox.alert("Ocurrió un error al elminar el archivo", null);
+            }
+
+            $("#btnConsultar").click();
+        },
+        error: function (data) {
+            clearLoading();
+            bootbox.alert("Error al elminar archivo: " + data, null);
+        }
+    });
+}
+
+function construirAccionesDatatable() {
+    let strPermisoVer = $('#hdnVerDocumento').val();
+    let strPermisoEditar = $('#hdnEditarDocumento').val();
+    let strPermisoEliminar = $('#hdnEliminarDocumento').val();
+
+    let strBotonVer = GcolDTFile2;
+    let strBotonEditar = "";
+    let strBotonEliminar = "";
+    let strMenuAccion = "";
+
+    if (strPermisoVer == "1") {
+        strBotonVer = GcolDTFile2;
+    }
+    else {
+        strBotonVer = "";
+    }
+
+    if (strPermisoEditar == "1") {
+        strBotonEditar = constBtnEditar;
+    }
+    else {
+        strBotonEditar = "";
+    }
+
+    if (strPermisoEliminar == "1") {
+        strBotonEliminar = constBtnEliminar;
+    }
+    else {
+        strBotonEliminar = "";
+    }
+
+    strMenuAccion = '<center>' + strBotonVer + strBotonEditar + strBotonEliminar + '<center>';
+
+    return strMenuAccion;
+}
+
+function descargarPdfs() {
+
+    if ($("#hdnCantidadMaxImportarPdfs").val() > 0) {
+        let countchecked = $("table input[type=checkbox]:checked").length;
+        if (countchecked > 5) {
+            bootbox.alert("Solo se puede seleccionar como máximo, 5 ítems.", null);
+        }
+        else {
+            var data = [];
+            var ListaIds = "";
+            $("input[type=checkbox]:checked").each(function () {
+                //cada elemento seleccionado
+                console.log($(this).parent().parent().parent().find('td').eq(2).html());
+                let id = $(this).parent().parent().parent().find('td').eq(2).html();
+                ListaIds = ListaIds + id + ";";
+                data.push(id);
+
+            });
+
+            var urlValidate = BASE_APP_URL + "Documento/ValidateRequestDownload";
+
+            jQuery.ajax({
+                url: urlValidate,
+                type: 'POST',
+                data: {
+                    'paramKey': $("#hidIdUser").val(),
+                    'data': data
+                },
+                success: function (data) {
+                    console.log('Returned data is: ' + data);
+                    if (data.CodRpta == '0') {
+
+                        var varCadena = "IdUserKey=" + data.IdUrl + "&IdFileKey=" + data.CodigoFile;
+                        var varUrlDownload = data.UrlPdf + varCadena;
+                        var url = BASE_APP_URL + 'Documento/DescargarPDFMasivo';
+                        window.location.href = varUrlDownload;
+                    }
+                    else {
+                        bootbox.alert("No se puede abrir el documento electrónico.", null);
+                    }
+                },
+                error: function (error) {
+                    bootbox.alert("Ocurrió un problema al abrir el documento electrónico.", null);
+                }
+            });
+        }
+    } else {
+        bootbox.alert("Debe seleccionar al menos un ítem para realizar la descarga.", null);
+    }
+}
+
+function validarCampos() {
+    let isOK = true;
+    strMensajeValidacion = "";
+
+    $("#EditarDocumento :input").each(function () {
+        let nombreIdInput = $(this).attr("id");
+        let campoEsRequerido = $(this).attr("data-codigo");
+
+        if (campoEsRequerido == "true") {
+            let tipoControl = $(this).context.nodeName;
+            let valorInput = $(this).val();
+
+            if (tipoControl == "INPUT") {
+
+                if (valorInput == "") {
+                    strMensajeValidacion = 'El campo ' + nombreIdInput + ' es requerido';
+                    isOK = false;
+                    return false;
+                }
+            }
+            else if (tipoControl == "SELECT") {
+                if (valorInput == "--Seleccione--") {
+                    strMensajeValidacion = 'Seleccione ' + nombreIdInput;
+                    isOK = false;
+                    return false;
+                }
+            }
+        }
+
+    });
+
+    if (isOK) {
+        if ($('#chkUploadEdit').prop('checked')) {
+            if ($('#fileUploadEdit').get(0).files.length === 0) {
+
+                strMensajeValidacion = 'Ingrese un archivo con extensión .pdf';
+                isOK = false;
+            }
+        }
+    }
+
+    return isOK;
 }

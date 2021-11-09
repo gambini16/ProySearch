@@ -3,6 +3,7 @@ using SearchDocuments.Negocio.Parametro;
 using SearchDocumentsSiteWeb.General;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -103,6 +104,114 @@ namespace SearchDocumentsSiteWeb.Controllers.Parametro
             parametro.DESCRIPCION = "Femenino";
             parametro.VALOR = "2";
             lstParametros.Add(parametro);
+
+            return new SelectList(lstParametros, CamposDDL.VALOR.Value, CamposDDL.DESCRIPCION.Value);
+        }
+        [SessionExpireFilter]
+        public SelectList SelectListUsuarios()
+        {
+
+            IParametroBL objParametroBL = new ParametroBL();
+            ParametroEL objParametroEL = new ParametroEL();
+            var LstParametroBuscar = new List<ParametroEL>();
+            objParametroEL.CODIGO_VALOR = "0";
+            objParametroEL.VALOR = "0";
+            objParametroEL.DESCRIPCION = "--TODOS--";
+            LstParametroBuscar.Add(objParametroEL);
+            var vLstParametro = objParametroBL.fn_Get_Usuarios();
+            foreach (var item in vLstParametro)
+            {
+                LstParametroBuscar.Add(item);
+            }
+            return new SelectList(LstParametroBuscar, CamposDDL.VALOR.Value, CamposDDL.DESCRIPCION.Value);
+        }
+
+        [SessionExpireFilter]
+        public SelectList SelectListEventos()
+        {
+            IParametroBL objParametroBL = new ParametroBL();
+            ParametroEL objParametroEL = new ParametroEL();
+            var LstParametroBuscar = new List<ParametroEL>();
+            objParametroEL.CODIGO_VALOR = "0";
+            objParametroEL.VALOR = "0";
+            objParametroEL.DESCRIPCION = "--TODOS--";
+            LstParametroBuscar.Add(objParametroEL);
+            var vLstParametro = objParametroBL.fn_Get_Eventos();
+            foreach (var item in vLstParametro)
+            {
+                LstParametroBuscar.Add(item);
+            }
+            return new SelectList(LstParametroBuscar, CamposDDL.VALOR.Value, CamposDDL.DESCRIPCION.Value);
+        }
+
+        [SessionExpireFilter]
+        public SelectList SelectListTiposDocumentosporPerfilParaRepo(int codigoPerfil)
+        {
+            //var vLstParametro = new List<ParametroEL>();
+            //IParametroBL objParametroBL = new ParametroBL();
+            //ParametroEL objParametroEL = new ParametroEL();
+            //vLstParametro = objParametroBL.fn_Get_PlantillasPorPerfil(codigoPerfil);
+
+            IParametroBL objParametroBL = new ParametroBL();
+            ParametroEL objParametroEL = new ParametroEL();
+            var LstParametroBuscar = new List<ParametroEL>();
+            objParametroEL.CODIGO_VALOR = "0";
+            objParametroEL.VALOR = "0";
+            objParametroEL.DESCRIPCION = "--TODOS--";
+            LstParametroBuscar.Add(objParametroEL);
+
+            var vLstParametro = objParametroBL.fn_Get_PlantillasPorPerfil(codigoPerfil);
+
+            foreach (var item in vLstParametro)
+            {
+                LstParametroBuscar.Add(item);
+            }
+
+            return new SelectList(LstParametroBuscar, CamposDDL.VALOR.Value, CamposDDL.DESCRIPCION.Value);
+        }
+
+        [SessionExpireFilter]
+        public SelectList SelectListGrupos()
+        {
+            IParametroBL objParametroBL = new ParametroBL();
+            ParametroEL objParametroEL = new ParametroEL();
+            var LstParametroBuscar = new List<ParametroEL>();
+            objParametroEL.CODIGO_VALOR = "0";
+            objParametroEL.VALOR = "0";
+            objParametroEL.DESCRIPCION = ConfigurationManager.AppSettings["keyConstSeleccione"];
+            LstParametroBuscar.Add(objParametroEL);
+            var vLstParametro = objParametroBL.fn_GetGruposAll();
+            foreach (var item in vLstParametro)
+            {
+                LstParametroBuscar.Add(item);
+            }
+            return new SelectList(LstParametroBuscar, CamposDDL.VALOR.Value, CamposDDL.DESCRIPCION.Value);
+        }
+        [SessionExpireFilter]
+        public SelectList EstadosUsuario()
+        {
+            //0 : TODOS | 1:ACTIVO | 2: INACTIVO
+            List<ParametroEL> lstParametros = new List<ParametroEL>();
+            ParametroEL parametro;
+
+            parametro = new ParametroEL();
+            parametro.CODIGO_VALOR = "0";
+            parametro.DESCRIPCION = ConfigurationManager.AppSettings["keyConstTodos"];
+            parametro.VALOR = "0";
+            lstParametros.Add(parametro);
+
+            parametro = new ParametroEL();
+            parametro.CODIGO_VALOR = "1";
+            parametro.DESCRIPCION = "ACTIVO";
+            parametro.VALOR = "1";
+            lstParametros.Add(parametro);
+
+            parametro = new ParametroEL();
+            parametro.CODIGO_VALOR = "2";
+            parametro.DESCRIPCION = "INACTIVO";
+            parametro.VALOR = "2";
+            lstParametros.Add(parametro);
+
 
             return new SelectList(lstParametros, CamposDDL.VALOR.Value, CamposDDL.DESCRIPCION.Value);
         }

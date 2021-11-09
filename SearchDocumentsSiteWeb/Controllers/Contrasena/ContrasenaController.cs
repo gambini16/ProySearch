@@ -1,4 +1,5 @@
-﻿using SearchDocuments.Entidades;
+﻿using SearchDocuments.Comunes;
+using SearchDocuments.Entidades;
 using SearchDocuments.Negocio.SeguridadSistema;
 using SearchDocuments.Negocio.Usuario;
 using SearchDocumentsSiteWeb.General;
@@ -42,80 +43,43 @@ namespace SearchDocumentsSiteWeb.Controllers.Contrasena
         // GET: Contrasena
         public ActionResult Index()
         {
+            ViewBag.UrlRedirectContrasena = ConfigurationManager.AppSettings["ketUrlRedirectContrasena"].ToString();
             return View();
         }
-
-        [SessionExpireFilter]
-        public ActionResult Editar()
+        [HttpPost]
+        public JsonResult RecuperarClave()
         {
-            this.RefrescarCache();
-            int intCodUser = Convert.ToInt32(ViewData["USER_ID"]);
-            IUsuarioBL objBL = new UsuarioBL();
-            UsuarioEL objUsuario = new UsuarioEL();
-            UsuarioEL objUser = new UsuarioEL();
-            objUser.USUARIO_ID = intCodUser;
-            objUser = objBL.fn_GetInfo_Usuario(objUser);
-            return View("Editar", objUser);
-        }
-
-        [SessionExpireFilter]
-        public ActionResult Recuperar()
-        {
-            return View();
-        }
-
-        public ActionResult Actualizar(int CodUser, string PwdOld, string PwdNew)
-        {
-            string strRespuesta = string.Empty;
-            IUsuarioBL objBL = new UsuarioBL();
-            Tbl_users objUsuario = new Tbl_users();
-            UsuarioEL oUsuario = new UsuarioEL();
-            oUsuario.USUARIO_ID = CodUser;
-            //objUsuario = objBL.ObtenerCodigoUsuario(CodUser);
-            oUsuario = objBL.fn_GetInfo_Usuario(oUsuario);
-            if (oUsuario != null)
-            {
-                if (!oUsuario.CLAVE.Equals(PwdOld))
-                {
-                    //Contraseña incorrecta
-                    strRespuesta = "2";
-                    return Json(new { strRespuesta = strRespuesta }, JsonRequestBehavior.AllowGet);
-                }
-                else
-                {
-                    //Contraseña correcta
-                    IUsuarioBL objUsuarioBL = new UsuarioBL();
-                    UsuarioEL objUsuarioEL = new UsuarioEL();
-                    strRespuesta = objUsuarioBL.fn_Update_Usuario(CodUser, PwdNew);
-                    return Json(new { strRespuesta = strRespuesta }, JsonRequestBehavior.AllowGet);
-                }
-            }
-            else
-            {
-                strRespuesta = "1";
-                return Json(new { strRespuesta = strRespuesta }, JsonRequestBehavior.AllowGet);
-
-            }
-        }
-        public ActionResult RecuperarClave()
-        {
-            string strRespuesta = string.Empty;
             IUsuarioBL objUsuarioBL = new UsuarioBL();
-            UsuarioEL objUsuarioEL = new UsuarioEL();
-            objUsuarioEL.EMAIL = Request.Form["correo"].ToString();
-            string nuevaClave = CrearPassword(10);
-            objUsuarioEL.CLAVE = Encriptador.Encriptar(nuevaClave);
-            strRespuesta = objUsuarioBL.fn_Update_GenerarClave(objUsuarioEL);
-            UsuarioEL usuario = objUsuarioBL.fn_GetInfo_UsuarioCorreo(objUsuarioEL);
-            if (usuario == null)
+
+            string userEmail = Request.Form["correo"].ToString();
+            var objUsuario = objUsuarioBL.ObtenerUsuarioPorEmail(userEmail);
+
+            if (objUsuario.USUARIO_ID == 0)
             {
-                strRespuesta = "NOOK";
+                return Json(new { strRespuesta = "NOOK" }, JsonRequestBehavior.AllowGet);
             }
             else
             {
-                fn_enviar_correo_usuario(usuario, objUsuarioEL.EMAIL, nuevaClave);
+                string password = Util.CrearPassword(10);
+
+                var requestUpdatePassword = new UsuarioEL
+                {
+                    USUARIO_ID = objUsuario.USUARIO_ID,
+                    CLAVE = Cryptography.Encrypt(password, objUsuario.USUARIO_ID.ToString())
+                };
+
+                var passwordEncriptado = objUsuarioBL.Update_Tbl_usersPassword(requestUpdatePassword);
+
+                //var strRespuesta = passwordEncriptado == "0" ? "OK" : "NOOK";
+
+
+                if (passwordEncriptado == "0")
+                {
+                    fn_enviar_correo_usuario(objUsuario, userEmail, password);
+                }
+
+                return Json(new { strRespuesta = passwordEncriptado }, JsonRequestBehavior.AllowGet);
             }
-            return Json(new { strRespuesta = strRespuesta }, JsonRequestBehavior.AllowGet);
         }
 
         public string fn_enviar_correo_usuario(UsuarioEL usuario, string correo, string nuevaClave)
@@ -132,14 +96,14 @@ namespace SearchDocumentsSiteWeb.Controllers.Contrasena
             {
                 body = reader.ReadToEnd();
             }
-            body = body.Replace("{nombres}", usuario.NOMBRES + " " + usuario.APELLIDO_PATERNO );
-            body = body.Replace("{usuario}", usuario.LOGIN.ToUpper().ToString());
+            body = body.Replace("{nombres}", usuario.NOMBRES + " " + usuario.APELLIDO_PATERNO);
+            body = body.Replace("{usuario}", usuario.LOGIN.ToString());
             body = body.Replace("{clave}", nuevaClave);
             body = body.Replace("{urlImagen}", urlImagen);
             var smtp = new SmtpClient
             {
-                Host = "smtp.gmail.com",
-                Port = 587,
+                Host = ConfigurationManager.AppSettings["ServidorSMTP"],
+                //Port = 587,
                 EnableSsl = true,
                 DeliveryMethod = SmtpDeliveryMethod.Network,
                 UseDefaultCredentials = false,
@@ -147,7 +111,7 @@ namespace SearchDocumentsSiteWeb.Controllers.Contrasena
             };
             using (var mess = new MailMessage(senderEmail, receiverEmail)
             {
-                Subject = "Recuperación de Contraseña de usuario : " + usuario.LOGIN_USUARIO,
+                Subject = sub,
                 Body = body,
                 IsBodyHtml = true
             })
@@ -157,16 +121,64 @@ namespace SearchDocumentsSiteWeb.Controllers.Contrasena
             return "OK";
         }
 
-        public string CrearPassword(int longitud)
+        //posible borrar
+        [SessionExpireFilter]
+        public ActionResult Editar()
         {
-            string caracteres = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-            StringBuilder res = new StringBuilder();
-            Random rnd = new Random();
-            while (0 < longitud--)
+            this.RefrescarCache();
+            int intCodUser = Convert.ToInt32(ViewData["USER_ID"]);
+            IUsuarioBL objBL = new UsuarioBL();
+            UsuarioEL objUsuario = new UsuarioEL();
+            UsuarioEL objUser = new UsuarioEL();
+            objUser.USUARIO_ID = intCodUser;
+            objUser = objBL.fn_GetInfo_Usuario(objUser);
+            return View("Editar", objUser);
+        }
+
+        //posible borrar
+        [SessionExpireFilter]
+        public ActionResult Recuperar()
+        {
+            return View();
+        }
+
+        //posible borrar
+        public ActionResult Actualizar(int CodUser, string PwdOld, string PwdNew)
+        {
+            string strRespuesta = string.Empty;
+            IUsuarioBL objBL = new UsuarioBL();
+            Tbl_users objUsuario = new Tbl_users();
+            UsuarioEL oUsuario = new UsuarioEL();
+            oUsuario.USUARIO_ID = CodUser;
+            //objUsuario = objBL.ObtenerCodigoUsuario(CodUser);
+            oUsuario = objBL.fn_GetInfo_Usuario(oUsuario);
+            if (oUsuario != null)
             {
-                res.Append(caracteres[rnd.Next(caracteres.Length)]);
+                string strPwd = Cryptography.Decrypt(oUsuario.CLAVE, oUsuario.USUARIO_ID.ToString());
+
+                if (!strPwd.Equals(PwdOld))
+                {
+                    //Contraseña incorrecta
+                    strRespuesta = "2";
+                    return Json(new { strRespuesta = strRespuesta }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    //Contraseña correcta
+                    IUsuarioBL objUsuarioBL = new UsuarioBL();
+                    UsuarioEL objUsuarioEL = new UsuarioEL();
+
+                    string passwordEncriptado = Cryptography.Encrypt(PwdNew, oUsuario.USUARIO_ID.ToString());
+                    strRespuesta = objUsuarioBL.fn_Update_Usuario(CodUser, passwordEncriptado);
+                    return Json(new { strRespuesta = strRespuesta }, JsonRequestBehavior.AllowGet);
+                }
             }
-            return res.ToString();
+            else
+            {
+                strRespuesta = "1";
+                return Json(new { strRespuesta = strRespuesta }, JsonRequestBehavior.AllowGet);
+
+            }
         }
     }
 }

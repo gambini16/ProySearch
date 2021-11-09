@@ -1,9 +1,7 @@
 ﻿using SearchDocuments.Entidades;
 using SearchDocuments.Negocio.Auditoria;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System.Text;
 
 namespace SearchDocumentsSiteWeb.General
 {
@@ -39,7 +37,7 @@ namespace SearchDocumentsSiteWeb.General
             return intResultado;
 
         }
-        public static int RegistrarAuditoriaDS(int? intTocId,string strNameToc,int? intIdUser,string strNameEvent)
+        public static int RegistrarAuditoriaDS(int? intTocId, string strNameToc, int? intIdUser, string strNameEvent)
         {
             int intResultado = 0;
             try
@@ -141,6 +139,18 @@ namespace SearchDocumentsSiteWeb.General
                 get { return _value; }
             }
 
+        }
+
+        public static string CrearPassword(int longitud)
+        {
+            string caracteres = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+            StringBuilder res = new StringBuilder();
+            Random rnd = new Random();
+            while (0 < longitud--)
+            {
+                res.Append(caracteres[rnd.Next(caracteres.Length)]);
+            }
+            return res.ToString();
         }
     }
 }

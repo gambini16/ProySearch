@@ -53,6 +53,9 @@
     <Reference Include="Desencriptador">
       <HintPath>D:\dll\Desencriptador.dll</HintPath>
     </Reference>
+    <Reference Include="DotNetZip, Version=1.15.0.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotNetZip.1.15.0\lib\net40\DotNetZip.dll</HintPath>
+    </Reference>
     <Reference Include="Encriptador">
       <HintPath>D:\dll\Encriptador.dll</HintPath>
     </Reference>
@@ -60,6 +63,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.7\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
@@ -148,6 +152,8 @@
     <Compile Include="Controllers\Modulo\ModuloController.cs" />
     <Compile Include="Controllers\Parametro\ParametroController.cs" />
     <Compile Include="Controllers\Perfil\PerfilController.cs" />
+    <Compile Include="Controllers\Reportes\ReporteAuditoria\ReporteAuditoriaController.cs" />
+    <Compile Include="Controllers\Reportes\ReporteInfoImagenes\ReporteInfoImagenesController.cs" />
     <Compile Include="Controllers\Usuario\UsuarioController.cs" />
     <Compile Include="General\Constantes.cs" />
     <Compile Include="General\Cryptography.cs" />
@@ -421,6 +427,8 @@
     <Content Include="imgUser\userDefault.jpg" />
     <Content Include="Logo\1.jpg" />
     <Content Include="Logo\sociedad.jpg" />
+    <Content Include="Plantillas\TemplateRecuperar.html" />
+    <Content Include="Plantillas\TemplateRegistroUser.html" />
     <Content Include="Scripts\angular.min.js" />
     <Content Include="Scripts\bootbox.min.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -765,12 +773,11 @@
     <Content Include="Scripts\Documentos\Perfil\PerfilModulo.js" />
     <Content Include="Scripts\Documentos\Perfil\PlantillaPerfil.js" />
     <Content Include="Scripts\Documentos\Perfil\Ver.js" />
+    <Content Include="Scripts\Documentos\ReporteAuditoria\index.js" />
+    <Content Include="Scripts\Documentos\ReporteInfoImagenes\index.js" />
     <Content Include="Scripts\Documentos\ScriptFinalPagina.js" />
     <Content Include="Scripts\Documentos\UsuarioInfoPC.js" />
-    <Content Include="Scripts\Documentos\Usuario\Crear.js" />
-    <Content Include="Scripts\Documentos\Usuario\Editar.js" />
-    <Content Include="Scripts\Documentos\Usuario\Index.js" />
-    <Content Include="Scripts\Documentos\Usuario\Ver.js" />
+    <Content Include="Scripts\Documentos\Usuario\index.js" />
     <Content Include="Scripts\dropzone.js" />
     <Content Include="Scripts\dropzone.min.css" />
     <Content Include="Scripts\dropzone.min.js" />
@@ -4242,10 +4249,7 @@
     <Content Include="Views\Shared\_header.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Shared\_NavBar.cshtml" />
-    <Content Include="Views\Usuario\Crear.cshtml" />
-    <Content Include="Views\Usuario\Editar.cshtml" />
     <Content Include="Views\Usuario\Index.cshtml" />
-    <Content Include="Views\Usuario\Ver.cshtml" />
     <Content Include="Views\Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -5090,6 +5094,9 @@
     <Content Include="vendors\validator\validator.jquery.json" />
     <Content Include="Views\Documento\ViewErrorPDF.cshtml" />
     <Content Include="Views\ImportarDocumento\Index.cshtml" />
+    <Content Include="Views\ReporteAuditoria\Index.cshtml" />
+    <Content Include="Views\ReporteInfoImagenes\Index.cshtml" />
+    <Content Include="Views\Contrasena\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -1,14 +1,12 @@
-﻿
-
-$(document).ready(function () {
+﻿$(document).ready(function () {
     $("#ul_1").css("display", "block");
 
     /* BOTONES */
     $("#hbtnGuardar").click(function (event) {
         event.preventDefault();
-        
+
         var strCorreo = $("#htxtCorreo").val();
-        if (strCorreo.trim()=="") {
+        if (strCorreo.trim() == "") {
             bootbox.alert("Tiene que ingresar un correo electrónico.", null);
         }
         else {
@@ -34,7 +32,7 @@ $(document).ready(function () {
                             var url = BASE_APP_URL;
                             window.location.href = url;
                         } else {
-                            if (result.strRespuesta=='NOOK') {
+                            if (result.strRespuesta == 'NOOK') {
                                 bootbox.alert("El correo ingresado no está asociado a ningún usuario del sistema.", null);
                             }
                             else {
@@ -53,7 +51,7 @@ $(document).ready(function () {
     /*BOTÓN CONSULTAR*/
     $("#hbtnCancelar").click(function (event) {
         event.preventDefault();
-        var url = '/'
+        var url = $("#hdnUrlRedirectContrasena").val();
         window.location.href = url;
     });
 });

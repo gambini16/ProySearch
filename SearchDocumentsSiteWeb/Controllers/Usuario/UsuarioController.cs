@@ -1,13 +1,13 @@
-﻿using SearchDocuments.Entidades;
-using SearchDocuments.Entidades.Listado;
+﻿using SearchDocuments.Comunes;
+using SearchDocuments.Entidades;
 using SearchDocuments.Negocio.Usuario;
 using SearchDocumentsSiteWeb.Controllers.Parametro;
 using SearchDocumentsSiteWeb.General;
-using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
-using System.Linq;
-using System.Web;
+using System.Net;
+using System.Net.Mail;
 using System.Web.Mvc;
 
 namespace SearchDocumentsSiteWeb.Controllers.Usuario
@@ -37,172 +37,35 @@ namespace SearchDocumentsSiteWeb.Controllers.Usuario
             }
         }
         #endregion
-
-        [HttpGet]
-        public JsonResult Leer_Usuario(string strLogin, string strApellidosNombres)
-        {
-            var vLstUsuario = new List<UsuarioListadoEL>();
-            IUsuarioBL objUsuarioBL = new UsuarioBL();
-            UsuarioEL objUsuarioEL = new UsuarioEL();
-            objUsuarioEL.LOGIN = strLogin;
-            objUsuarioEL.NOMBRE_COMPLETO = strApellidosNombres;
-            vLstUsuario = objUsuarioBL.fn_Get_Usuario(objUsuarioEL);
-            Session[Constantes.LISTA.Value] = null;
-            Session[Constantes.LISTA.Value] = vLstUsuario;
-            return Json(vLstUsuario, JsonRequestBehavior.AllowGet);
-        }
-
-        [SessionExpireFilter]
-        public ActionResult Crear()
+        // GET: Usuario
+        public ActionResult Index()
         {
             RefrescarCache();
-            ViewBag.Estado = new ParametroController().Estados();
-            ViewBag.Rol = new ParametroController().SelectListRoles();
+
+            ViewBag.ListGrupo = new ParametroController().SelectListGrupos();
+            ViewBag.EstadoUsuario = new ParametroController().EstadosUsuario();
             return View();
         }
 
         [HttpPost]
-        [SessionExpireFilter]
-        public ActionResult Guardar()
+        public JsonResult GetListadoUsuario(UsuarioEL objUsuarioRequest)
         {
-            string strRespuesta = string.Empty;
             IUsuarioBL objUsuarioBL = new UsuarioBL();
-            UsuarioEL objUsuarioEL = new UsuarioEL();
-            objUsuarioEL.EMAIL = Request.Form["correo"].ToString().ToUpper();
-            objUsuarioEL.LOGIN = Request.Form["login"].ToString().ToUpper();
-            objUsuarioEL.APELLIDO_PATERNO = Request.Form["apellidoPaterno"].ToString().ToUpper();
-            objUsuarioEL.NOMBRES = Request.Form["nombres"].ToString().ToUpper();
-            objUsuarioEL.ROL_CODIGO = Convert.ToInt32(Request.Form["rol"].ToString());
-            objUsuarioEL.ESTADO_CODIGO = Convert.ToInt32(Request.Form["estado"].ToString());
-            if (objUsuarioEL.ESTADO_CODIGO==1)
-            {
-                objUsuarioEL.ESTADO_CODIGO = 0;
-            }
-            else
-            {
-                objUsuarioEL.ESTADO_CODIGO = 1;
-            }
-            objUsuarioEL.CLAVE = Encriptador.Encriptar(Request.Form["clave"].ToString());
-            objUsuarioEL.USUARIO_REGISTRO = SesionActual.Current.USUARIO_LOGIN;
-            strRespuesta = objUsuarioBL.fn_Insert_Usuario(objUsuarioEL);
-            if (Request.Files.Count > 0)
-            {
-                HttpFileCollectionBase files = Request.Files;
-                for (int i = 0; i < files.Count; i++)
-                {
-                    HttpPostedFileBase file = files[i];
-                    string fname;
-                    if (Request.Browser.Browser.ToUpper() == "IE" || Request.Browser.Browser.ToUpper() == "INTERNETEXPLORER")
-                    {
-                        string[] testfiles = file.FileName.Split(new char[] { '\\' });
-                        fname = testfiles[testfiles.Length - 1];
-                    }
-                    else
-                    {
-                        fname = file.FileName;
-                        fname = objUsuarioEL.LOGIN + Path.GetExtension(file.FileName);
-                        objUsuarioEL.AVATAR = fname;
-                        objUsuarioEL.USUARIO_REGISTRO = SesionActual.Current.USUARIO_LOGIN;
-                    }
-                    fname = Path.Combine(Server.MapPath("~/Avatar/"), fname);
-                    file.SaveAs(fname);
-                    objUsuarioBL.fn_Update_UsuarioAvatar(objUsuarioEL);
-                }
-            }
-            else
-            {
-                objUsuarioEL.AVATAR = "userDefault.jpg";
-                objUsuarioEL.USUARIO_REGISTRO = SesionActual.Current.USUARIO_LOGIN;
-                objUsuarioBL.fn_Update_UsuarioAvatar(objUsuarioEL);
-            }
-            return Json(new { strRespuesta = (int.Parse(strRespuesta) > 0 ? "1" : strRespuesta) }, JsonRequestBehavior.AllowGet);
+            var listUsuario = objUsuarioBL.ObtenerListadoUsuario(objUsuarioRequest);
+
+            this.Session[Constantes.LISTA.Value] = (object)null;
+            this.Session[Constantes.LISTA.Value] = (object)listUsuario;
+
+            return this.Json((object)listUsuario, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
-        [SessionExpireFilter]
-        public ActionResult Actualizar()
+        public JsonResult GetUsuarioPorId(int IdUsuario)
         {
-            string strRespuesta = string.Empty;
             IUsuarioBL objUsuarioBL = new UsuarioBL();
-            UsuarioEL objUsuarioEL = new UsuarioEL();
+            var objUsuario = objUsuarioBL.ObtenerUsuarioPorId(IdUsuario);
 
-            objUsuarioEL.USUARIO_ID = Convert.ToInt32(Request.Form["id"].ToString());
-            objUsuarioEL.EMAIL = Request.Form["correo"].ToString().ToUpper();
-            objUsuarioEL.LOGIN = Request.Form["login"].ToString().ToUpper();
-            objUsuarioEL.APELLIDO_PATERNO = Request.Form["apellidoPaterno"].ToString().ToUpper();
-            objUsuarioEL.NOMBRES = Request.Form["nombres"].ToString().ToUpper();
-            objUsuarioEL.ESTADO_CODIGO = Convert.ToInt32(Request.Form["estado"].ToString());
-            if (objUsuarioEL.ESTADO_CODIGO == 1)
-            {
-                objUsuarioEL.ESTADO_CODIGO = 0;
-            }
-            else
-            {
-                objUsuarioEL.ESTADO_CODIGO = 1;
-            }
-            objUsuarioEL.ROL_CODIGO = Convert.ToInt32(Request.Form["rol"].ToString());
-            objUsuarioEL.CLAVE = Encriptador.Encriptar(Request.Form["clave"].ToString());
-            objUsuarioEL.USUARIO_REGISTRO = SesionActual.Current.USUARIO_LOGIN;
-            strRespuesta = objUsuarioBL.fn_Update_Usuario(objUsuarioEL);
-            HttpFileCollectionBase files = Request.Files;
-            for (int i = 0; i < files.Count; i++)
-            {
-                HttpPostedFileBase file = files[i];
-                string fname;
-                if (Request.Browser.Browser.ToUpper() == "IE" || Request.Browser.Browser.ToUpper() == "INTERNETEXPLORER")
-                {
-                    string[] testfiles = file.FileName.Split(new char[] { '\\' });
-                    fname = testfiles[testfiles.Length - 1];
-                }
-                else
-                {
-                    fname = file.FileName;
-                    fname = objUsuarioEL.LOGIN + Path.GetExtension(file.FileName);
-                    objUsuarioEL.AVATAR = fname;
-                    objUsuarioEL.USUARIO_REGISTRO = SesionActual.Current.USUARIO_LOGIN;
-                }
-                fname = Path.Combine(Server.MapPath("~/Avatar/"), fname);
-                file.SaveAs(fname);
-                objUsuarioBL.fn_Update_UsuarioAvatar(objUsuarioEL);
-            }
-            return Json(new { strRespuesta = strRespuesta }, JsonRequestBehavior.AllowGet);
-        }
-
-        [SessionExpireFilter]
-        public ActionResult Editar(int strIdCodigoUsuario)
-        {
-            RefrescarCache();
-            var vusuario = new UsuarioEL();
-            IUsuarioBL objUsuarioBL = new UsuarioBL();
-            UsuarioEL objUsuarioEL = new UsuarioEL();
-            objUsuarioEL.USUARIO_ID = strIdCodigoUsuario;
-            ViewBag.Estado = new ParametroController().Estados();
-            ViewBag.Rol = new ParametroController().SelectListRoles();
-            vusuario = objUsuarioBL.fn_GetInfo_Usuario(objUsuarioEL);
-            vusuario.CLAVE = Desencriptador.Desencriptar(vusuario.CLAVE);
-            string strRuta = String.Empty;
-            var strRutaServicio = System.Configuration.ConfigurationManager.AppSettings["RutaAvatar"].ToString();
-            strRuta = Request.ApplicationPath + strRutaServicio + vusuario.AVATAR;
-            ViewData["urlAvatar"] = strRuta;
-            return View("Editar", vusuario);
-        }
-
-        [SessionExpireFilter]
-        public ActionResult Ver(int strIdCodigoUsuario)
-        {
-            RefrescarCache();
-            var vusuario = new UsuarioEL();
-            IUsuarioBL objUsuarioBL = new UsuarioBL();
-            UsuarioEL objUsuarioEL = new UsuarioEL();
-            objUsuarioEL.USUARIO_ID = strIdCodigoUsuario;
-            ViewBag.Estado = new ParametroController().Estados();
-            ViewBag.Rol = new ParametroController().SelectListRoles();
-            vusuario = objUsuarioBL.fn_GetInfo_Usuario(objUsuarioEL);
-            string strRuta = String.Empty;
-            var strRutaServicio = System.Configuration.ConfigurationManager.AppSettings["RutaAvatar"].ToString();
-            strRuta = Request.ApplicationPath + strRutaServicio + vusuario.AVATAR;
-            ViewData["urlAvatar"] = strRuta;
-            return View("Ver", vusuario);
+            return this.Json((object)objUsuario, JsonRequestBehavior.AllowGet);
         }
 
         [SessionExpireFilter]
@@ -215,7 +78,7 @@ namespace SearchDocumentsSiteWeb.Controllers.Usuario
 
             Response.ContentEncoding = System.Text.Encoding.UTF8;
             Response.Charset = "";
-            ExportExcel.ExportarExcel<UsuarioListadoEL>(TitulosCabeceraExcel.USUARIO.Value, (List<UsuarioListadoEL>)(Session[Constantes.LISTA.Value]), Response.Output);
+            ExportExcel.ExportarExcel<UsuarioEL>(TitulosCabeceraExcel.AUDITORIA.Value, (List<UsuarioEL>)(Session[Constantes.LISTA.Value]), Response.Output);
             Response.BinaryWrite(System.Text.Encoding.UTF8.GetPreamble());
 
             Response.Flush();
@@ -224,11 +87,86 @@ namespace SearchDocumentsSiteWeb.Controllers.Usuario
             return Json(new { strRespuesta = strRespuesta });
         }
 
-        // GET: Usuario
-        public ActionResult Index()
+        [HttpPost]
+        public JsonResult GuadarEnBaseDatos(UsuarioEL request)
         {
-            RefrescarCache();
-            return View();
+            string resultado = string.Empty;
+            IUsuarioBL objUsuarioBL = new UsuarioBL();
+
+            if (request.USUARIO_ID == 0)
+            {
+                string strPwd = Util.CrearPassword(10);
+
+                //request.CLAVE = strPwd;
+
+                var result = objUsuarioBL.Insert_Tbl_users(request);
+
+                var requestUpdatePassword = new UsuarioEL
+                {
+                    USUARIO_ID = Funciones.CheckInt(result),
+                    CLAVE = Cryptography.Encrypt(strPwd, result)
+                };
+
+                var passwordEncriptado = objUsuarioBL.Update_Tbl_usersPassword(requestUpdatePassword);
+
+                resultado = passwordEncriptado == "0" ? "OK" : "NOOK";
+
+                if (resultado == "OK")
+                {
+                    fn_enviar_correo_usuario(request, request.EMAIL, strPwd);
+                }
+            }
+            else
+            {
+                var result = objUsuarioBL.Update_Tbl_users(request);
+                resultado = result == "0" ? "OK" : "NOOK";
+            }
+
+            return this.Json((object)new
+            {
+                Value = resultado,
+            }, JsonRequestBehavior.AllowGet);
         }
+
+        private string fn_enviar_correo_usuario(UsuarioEL usuario, string correo, string nuevaClave)
+        {
+            string usuarioEnvio = ConfigurationManager.AppSettings["UsuarioCorreo"].ToString();
+            string contrasena = ConfigurationManager.AppSettings["ContrasenaCorreo"].ToString();
+            string urlImagen = ConfigurationManager.AppSettings["urlImagenCorreo"].ToString();
+            var senderEmail = new MailAddress(usuarioEnvio, ConfigurationManager.AppSettings["TituloEmail2"]);
+            var receiverEmail = new MailAddress(correo, usuario.LOGIN.ToUpper().ToString());
+            var password = contrasena;
+            var sub = "Bienvenido a Document Security";
+
+            string body = string.Empty;
+            using (StreamReader reader = new StreamReader(Server.MapPath("~/Plantillas/TemplateRegistroUser.html")))
+            {
+                body = reader.ReadToEnd();
+            }
+            body = body.Replace("{nombres}", usuario.NOMBRES + " " + usuario.APELLIDO_PATERNO);
+            body = body.Replace("{usuario}", usuario.LOGIN.ToString());
+            body = body.Replace("{clave}", nuevaClave);
+            body = body.Replace("{urlImagen}", urlImagen);
+            var smtp = new SmtpClient
+            {
+                Host = ConfigurationManager.AppSettings["ServidorSMTP"],
+                //Port = 587,
+                EnableSsl = true,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false,
+                Credentials = new NetworkCredential(senderEmail.Address, password)
+            };
+            using (var mess = new MailMessage(senderEmail, receiverEmail)
+            {
+                Subject = sub,
+                Body = body,
+                IsBodyHtml = true
+            })
+            {
+                smtp.Send(mess);
+            }
+            return "OK";
+        }
+
     }
 }

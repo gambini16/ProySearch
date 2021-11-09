@@ -1,0 +1,87 @@
+﻿@{
+    ViewBag.Title = "Reporte Info Imagenes";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@Html.Hidden("hhdnOpcionesAcceso", ViewData["OPCIONES_USUARIO"])
+@Html.Hidden("hhdnPerfilUser", ViewData["LOGUEO_PERFIL"])
+<script src="~/Scripts/Documentos/ReporteInfoImagenes/index.js"></script>
+
+<div class="page-title">
+    <div class="title_left">
+        <h3>Info Imagenes</h3>
+    </div>
+    <div class="title_right">
+        <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+            <div class="input-group">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="clearfix"></div>
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title" style="font-size:14px">
+                <i><img src="~/Content/images/icons-flat/binoculars.svg" alt="" height="19" width="19" /></i>Campos de búsqueda
+                <ul class="nav navbar-right panel_toolbox">
+                    <li>
+                        <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                    </li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+
+            <div class="x_content">
+                <form id="frmBusqueda" data-parsley-validate class="form-horizontal form-label-left">
+                    <div class="form-bodyBuscar">
+                        <div class="form-row">
+                            <div class="form-group col-md-5 col-sm-5 col-xs-12">
+                                <label>
+                                    Usuarios
+                                </label>
+                                @Html.DropDownList("hddlTemplateId", (SelectList)ViewBag.TipoDocumentoInfoImagenes, new { @class = "form-control", Id = "hddlTemplateId" })
+                            </div>
+                        </div>
+                        <div class="row"></div>
+                        <div class="row">
+                            <div class="form-group">
+                                <button id="btnConsultar" type="button" class="btn btn-primary">Consultar</button>
+                                <button id="hbtnExcel" type="button" OnClick="location.href='@Url.Action("ExportarExcel", "ReporteInfoImagenes")'" class="btn grey-gallery">Exportar a Excel</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="x_panel">
+        <div class="x_title" style="font-size:14px">
+            <i><img src="~/Content/images/icons-flat/perfil.svg" alt="" height="19" width="19" /></i>Listado de Imagenes
+            <ul class="nav navbar-right panel_toolbox">
+                <li>
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </li>
+            </ul>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <div><p id="cantidadRegistros" value=""></p></div>
+            <div class="form-group" id="Resultados">
+                <table id="tblInfoImagenes" class="table table-striped table-bordered dt-responsive nowrap" cellpadding="0" width="100%">
+                </table>
+            </div>
+            <div id="BotoneraPerfil">
+                <div class="row">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

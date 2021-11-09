@@ -153,6 +153,9 @@ namespace SearchDocumentsSiteWeb.General
         public static TitulosCabeceraExcel BITACORA_ERROR_APLICACIONES { get { return new TitulosCabeceraExcel("BITÁCORA DE ERROR DE APLICACIONES"); } }
         public static TitulosCabeceraExcel OPCIONES_PERFIL { get { return new TitulosCabeceraExcel("LISTA DE OPCIONES POR PERFIL"); } }
         public static TitulosCabeceraExcel PERFIL_USUARIO { get { return new TitulosCabeceraExcel("LISTA DE PERFILES POR USUARIO"); } }
+        public static TitulosCabeceraExcel DOCUMENTO { get { return new TitulosCabeceraExcel("LISTA DE DOCUMENTOS"); } }
+        public static TitulosCabeceraExcel AUDITORIA { get { return new TitulosCabeceraExcel("LISTA DE AUDITORIA"); } }
+        public static TitulosCabeceraExcel IMAGENES { get { return new TitulosCabeceraExcel("LISTA DE IMAGENES"); } }
     }
 
     public class KeysWebConfig

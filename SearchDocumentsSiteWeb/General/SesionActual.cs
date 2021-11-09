@@ -45,6 +45,7 @@ namespace SearchDocumentsSiteWeb.General
             IN_ESTA_EDIT = 0;
             IN_ESTA_ELI = 0;
             //ADD MGM-FIN
+            IN_ESTA_EXPORT = 0;
 
             EXCEL = null;
 
@@ -96,6 +97,7 @@ namespace SearchDocumentsSiteWeb.General
         public int IN_ESTA_VIEW { get; set; }
         public int IN_ESTA_EDIT { get; set; }
         public int IN_ESTA_ELI { get; set; }
+        public int IN_ESTA_EXPORT { get; set; }
 
         public string PERFIL_NOMBRE { get; set; }
 

@@ -1,4 +1,5 @@
-﻿using SearchDocuments.Comunes;
+﻿using Ionic.Zip;
+using SearchDocuments.Comunes;
 using SearchDocuments.Criptografia;
 using SearchDocuments.Entidades;
 using SearchDocuments.Entidades.ImportarDocumento;
@@ -6,7 +7,6 @@ using SearchDocuments.Entidades.Listado;
 using SearchDocuments.Negocio.Documento;
 using SearchDocuments.Negocio.Filtro;
 using SearchDocuments.Negocio.ImportarDocumento;
-using SearchDocumentsSiteWeb.Controllers.Modulo;
 using SearchDocumentsSiteWeb.Controllers.Parametro;
 using SearchDocumentsSiteWeb.General;
 using System;
@@ -14,15 +14,15 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Dynamic;
-using System.Linq;
-using System.Reflection;
-using System.Web;
+using System.Text;
 using System.Web.Mvc;
+using ZipFile = Ionic.Zip.ZipFile;
 
 namespace SearchDocumentsSiteWeb.Controllers.Documento
 {
     public class DocumentoController : Controller
     {
+
         #region "Refrescar Cache"
         [SessionExpireFilter]
         public void RefrescarCache()
@@ -68,6 +68,7 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
             filtro = "where 1=1 ";
             int contador = 0;
             string[] words = parametros.Split('|');
+            string cantidadRegistros = string.Empty;
 
             if (!parametros.Trim().Equals(""))
             {
@@ -100,7 +101,8 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
                                 strValue = strValue.Replace("--Seleccione--", "");
                                 intIndeOf = strValue.IndexOf("*");
 
-                                if (strValue.Length != 0) {
+                                if (strValue.Length != 0)
+                                {
                                     if (intIndeOf >= 0)
                                     {
                                         filtro = filtro + " AND (t." + item.NOMBRE_CAMPO + " like '" + strValue.Replace("*", "%") + "')";
@@ -139,7 +141,7 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
                         }
                         else
                         {
-                            
+
                             if (item.TIPO_CONTROL.Trim().Equals("0"))
                             {
                                 //txt
@@ -148,7 +150,8 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
                                 strValue = strValue.Replace("--Seleccione--", "");
                                 intIndeOf = strValue.IndexOf("*");
 
-                                if (strValue.Length != 0) {
+                                if (strValue.Length != 0)
+                                {
                                     if (intIndeOf >= 0)
                                     {
                                         filtro = filtro + " AND (t." + item.NOMBRE_CAMPO + " like '" + strValue.Replace("*", "%") + "')";
@@ -165,10 +168,11 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
                                 strValue = words[contador];
                                 strValue = strValue.Replace("'", "''");
                                 strValue = strValue.Replace("--Seleccione--", "");
-                                if (strValue.Length != 0) {
+                                if (strValue.Length != 0)
+                                {
                                     filtro = filtro + " AND (t." + item.NOMBRE_CAMPO + "='" + strValue + "')";
                                 }
-                            }                            
+                            }
                         }
                         contador = contador + 1;
                     }
@@ -177,7 +181,10 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
                 if (filtro == "where ") filtro = "where 1=1 ";
 
                 DataTable dt = new DataTable();
-                dt = objDocumentoBL.ObtenerListadoDinamico(select, filtro, objDocumentoEL.TABLA);
+                DataTable dtExcel = new DataTable();
+                dt = objDocumentoBL.ObtenerListadoDinamico(select, filtro, objDocumentoEL.TABLA, true);
+                dtExcel = objDocumentoBL.ObtenerListadoDinamico(select, filtro, objDocumentoEL.TABLA, false);
+
                 dynamic listado = new ExpandoObject();
                 var dictionary = (IDictionary<string, object>)listado;
                 if (dt != null)
@@ -201,13 +208,29 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
                     dictionary.Add("Resultado", columnaExtra);
                 }
 
+
                 Session[Constantes.LISTA.Value] = null;
                 Session[Constantes.LISTA.Value] = listado;
-                return Json(listado, JsonRequestBehavior.AllowGet);
+                cantidadRegistros = objDocumentoBL.ObtenerCantidadRegistros(filtro, objDocumentoEL.TABLA);
+                Session["DataTableDocumento"] = dtExcel;
+
+                //return Json(listado, JsonRequestBehavior.AllowGet);
+                return this.Json(new
+                {
+                    listado = listado,
+                    cantidadRegistros = cantidadRegistros,
+                    //CodigoFile = 1
+                }, JsonRequestBehavior.AllowGet);
             }
             Session[Constantes.LISTA.Value] = null;
             Session[Constantes.LISTA.Value] = vLstTD1;
-            return Json(vLstTD1, JsonRequestBehavior.AllowGet);
+            //return Json(vLstTD1, JsonRequestBehavior.AllowGet);
+            return this.Json((object)new
+            {
+                listado = vLstTD1,
+                cantidadRegistros = cantidadRegistros,
+                //CodigoFile = 1
+            }, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult ViewErrorPDF()
@@ -228,7 +251,7 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
                 ViewBag.hidIdUser = SesionActual.Current.VC_DATAENCRY.ToString();
             }
 
-
+            PermisosUsuario();
             RefrescarCache();
             int codPerfil = Convert.ToInt32(ViewData["LOGUEO_PERFIL"].ToString());
             //ViewBag.TipoDocumento = new ParametroController().SelectListTiposDocumentos();
@@ -236,6 +259,16 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
             ViewBag.Sexo = new ParametroController().SelectListSexo();
             return View();
         }
+
+        private void PermisosUsuario()
+        {
+            ViewData["hdnVerDocumento"] = SesionActual.Current.IN_ESTA_VIEW;
+            ViewData["hdnEliminarDocumento"] = SesionActual.Current.IN_ESTA_ELI;
+            ViewData["hdnEditarDocumento"] = SesionActual.Current.IN_ESTA_EDIT;
+            ViewData["hdnExportarPDF"] = SesionActual.Current.IN_ESTA_EXPORT;
+            ViewData["hdnCantidadMaxImportarPdfs"] = ConfigurationManager.AppSettings["keyCantidadMaxImportarPdfs"].ToString();
+        }
+
 
         [SessionExpireFilter]
         public ActionResult MostrarPDF(int intCodigoFile)
@@ -307,7 +340,7 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
             }
             return Json(objData, JsonRequestBehavior.AllowGet);
         }
-       
+
         public ActionResult GetPdf()
         {
             try
@@ -361,6 +394,10 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
                 else
                 {
                     string strCadena = string.Format("{0}_{1}", intCodigoFile.ToString(), strNombreArchivo);
+
+                    //Auditoria
+                    string strNameToc = this.Obtener_Name_Toc(intCodigoFile);
+                    Util.RegistrarAuditoriaDS(intCodigoFile, strNameToc, Funciones.CheckInt(strIdUser), Funciones.CheckStr(Util.EventName.VerImagen));
                     //Util.RegistrarAuditoria("Consulta Documento", "Abrir_Documento", strCadena, SesionActual.Current.VC_LOGIN_USU, SesionActual.Current.IN_CODIGO_USU);
                 }
 
@@ -380,6 +417,19 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
                 //TempData["yourMessage"] = "Acceso denegado al abrir el documento. (Codigo de error = 5)";
                 return RedirectToAction("ViewErrorPDF", "Documento");
             }
+        }
+        private string Obtener_Name_Toc(int tocId)
+        {
+            string strName = "";
+            IDocumentoBL objDocumentoBL = new DocumentoBL();
+            List<Tbl_Toc> list = new List<Tbl_Toc>();
+            list = objDocumentoBL.Tbl_toc_Get_TocId(tocId);
+            if (list.Count > 0)
+                strName = list[0].Name;
+            else
+                strName = "";
+
+            return strName;
         }
 
         [HttpGet]
@@ -419,26 +469,10 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
         public JsonResult ActualizarEnBaseDatos(Dictionary<string, string> dictImportarDocumento, int intTipoPlantilla, string nombreArchivo, int tocId)
         {
             IImportarDocumentoBL objImportarDocumentoBL = new ImportarDocumentoBL();
+            int intTocId = 0;
+            int intDocId = 0;
 
-            var objTBL_TOCEL = new TBL_TOCEL
-            {
-                TocId = tocId,
-                ParentId = int.Parse(ConfigurationManager.AppSettings["consParentId"]),
-                Name = nombreArchivo,
-                ElType = int.Parse(ConfigurationManager.AppSettings["consElType"]),
-                LastModified = DateTime.Now,
-                CreateDate = DateTime.Now,
-                IsIndexed = 0,
-                VolumeId = int.Parse(ConfigurationManager.AppSettings["consVolumeId"]),
-                TemplateId = intTipoPlantilla,
-                PageCount = int.Parse(ConfigurationManager.AppSettings["consPageCount"]),
-                Creator = SesionActual.Current.NOMBRE_COMPLETO,
-                Toc_Flags = 1,
-                Toc_Owner = string.Empty,
-                Toc_Comment = string.Empty
-            };
-
-            var resultDoc = objImportarDocumentoBL.fn_Insert_Update_Tbl_toc(objTBL_TOCEL);
+            var resultDoc = "0";
 
             if (resultDoc == "0")
             {
@@ -454,25 +488,28 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
 
                 if (resultTd == "0")
                 {
-                    var objTBL_DOCEL = new TBL_DOCEL
+                    IDocumentoBL objDocumentoBL = new DocumentoBL();
+                    List<TBL_DOCEL> listDoc = objDocumentoBL.Tbl_doc_Get_TocId(tocId, 1);
+                    if (listDoc.Count == 1)
                     {
-                        TocId = tocId,
-                        PageNum = int.Parse(ConfigurationManager.AppSettings["consPageNum"]),
-                        img_size = 0,
-                        txt_size = int.Parse(ConfigurationManager.AppSettings["consTxt_size"]),
-                        img_width = int.Parse(ConfigurationManager.AppSettings["consImg_width"]),
-                        img_height = int.Parse(ConfigurationManager.AppSettings["consImg_height"]),
-                        img_xdpi = int.Parse(ConfigurationManager.AppSettings["consImg_xdpi"]),
-                        img_ydpi = int.Parse(ConfigurationManager.AppSettings["consImg_ydpi"]),
-                        img_bpp = ConfigurationManager.AppSettings["consImg_bpp"].ToString()
-                    };
+                        intTocId = listDoc[0].TocId;
+                        intDocId = listDoc[0].PageId;
+                    }
 
-                    var result = objImportarDocumentoBL.fn_Insert_Update_Tbl_doc(objTBL_DOCEL);
+                    //Auditoria
+                    string strNameToc = this.Obtener_Name_Toc(tocId);
+                    Util.RegistrarAuditoriaDS(tocId, strNameToc, Funciones.CheckInt(SesionActual.Current.IN_CODIGO_USU), Funciones.CheckStr(Util.EventName.IndexacionActualizado));
 
+                    var resultData = new { PageId = intDocId, TocId = intTocId };
+                    return Json(resultData, JsonRequestBehavior.AllowGet);
+
+
+                    /*
                     return this.Json((object)new
                     {
-                        Value = int.Parse(result) > 0 ? result : "NOOK",
+                        result,
                     }, JsonRequestBehavior.AllowGet);
+                    */
                 }
                 else
                 {
@@ -492,5 +529,177 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
                 }, JsonRequestBehavior.AllowGet);
             }
         }
+
+        [HttpPost]
+        public JsonResult ElminarRegistro(int tocId)
+        {
+            try
+            {
+                IDocumentoBL objDocumentoBL = new DocumentoBL();
+
+                var result = objDocumentoBL.ActualizarTocFlagsTblToc(tocId);
+
+                //Auditoria
+                string strNameToc = this.Obtener_Name_Toc(tocId);
+                Util.RegistrarAuditoriaDS(tocId, strNameToc, Funciones.CheckInt(SesionActual.Current.IN_CODIGO_USU), Funciones.CheckStr(Util.EventName.Eliminar));
+
+                return this.Json((object)new
+                {
+                    Value = result
+                }, JsonRequestBehavior.AllowGet); ;
+            }
+            catch (Exception)
+            {
+
+                return this.Json((object)new
+                {
+                    Value = "NOOK",
+                }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [SessionExpireFilter]
+        public ActionResult ExportarExcelDocumento()
+        {
+
+            var dataValue = Session["DataTableDocumento"];
+
+            this.Response.ClearContent();
+            this.Response.Buffer = true;
+            this.Response.AddHeader("content-disposition", "attachment;filename=documento.xls");
+            this.Response.AddHeader("Content-Type", "application/vnd.ms-excel");
+            this.Response.ContentEncoding = Encoding.UTF8;
+            this.Response.Charset = "";
+            ExportExcel.ExportarExcelDimanico(TitulosCabeceraExcel.DOCUMENTO.Value, (DataTable)dataValue, this.Response.Output);
+            this.Response.BinaryWrite(Encoding.UTF8.GetPreamble());
+            this.Response.Flush();
+            this.Response.End();
+            //Util.RegistrarAuditoria("Documento", "Click", "Exportar excel correctamente", SesionActual.Current.NOMBRE_COMPLETO, SesionActual.Current.IN_CODIGO_USU);
+
+            string strRespuesta = "";
+            return Json(new { strRespuesta = strRespuesta });
+        }
+
+        public ActionResult ValidateRequestDownload(string paramKey, List<int> data)
+        {
+            string strEncode64User = string.Empty;
+            string strCodRpta = "0";
+            object objData;
+
+            try
+            {
+                strEncode64User = EncodingForBase64.Base64Encode(paramKey);
+                string strIdsFile = "";
+                foreach (var item in data) strIdsFile += item + "&";
+                string strEncodeIdFile = EncodingForBase64.Base64Encode(strIdsFile);
+
+                string stUrlPdf = ConfigurationManager.AppSettings["RutaPrincipal"] + "Documento/DescargarPDFMasivo?";
+                objData = new LineData { CodRpta = strCodRpta, MsgRpta = "OK", IdUrl = strEncode64User, UrlPdf = stUrlPdf, CodigoFile = strEncodeIdFile };
+
+            }
+            catch (Exception ex)
+            {
+                strCodRpta = "1";
+                objData = new LineData { CodRpta = strCodRpta, MsgRpta = ex.Message, IdUrl = strEncode64User, UrlPdf = string.Empty, CodigoFile = string.Empty };
+            }
+
+            return Json(objData, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult DescargarPDFMasivo()
+        {
+
+            try
+            {
+                if (Request.QueryString["IdFileKey"] == null || Request.QueryString["IdUserKey"] == null)
+                {
+                    TempData["yourMessage"] = "Problema al abrir el documento electrónico PDF. (Codigo de error = 1)";
+                    return RedirectToAction("ViewErrorPDF", "BusquedaDocumento");
+                }
+
+                string strIdFileRequest = Request.QueryString["IdFileKey"];
+                string strIdUserRequest = Request.QueryString["IdUserKey"];
+
+                if (EncodingForBase64.Base64Decode(strIdFileRequest) == null || EncodingForBase64.Base64Decode(strIdUserRequest) == null)
+                {
+                    TempData["yourMessage"] = "Problema al abrir el documento electrónico PDF. (Codigo de error = 2)";
+                    return RedirectToAction("ViewErrorPDF", "BusquedaDocumento");
+                }
+
+                string strCadenaIds = EncodingForBase64.Base64Decode(strIdFileRequest);
+                string strIdUserEncy = EncodingForBase64.Base64Decode(strIdUserRequest);
+                string strIdUser = EncryptionHelper.Decrypt(strIdUserEncy);
+
+                if (strIdUser != SesionActual.Current.IN_CODIGO_USU.ToString())
+                {
+                    TempData["yourMessage"] = "Problema al abrir el documento electrónico PDF. (Codigo de error = 3)";
+                    return RedirectToAction("ViewErrorPDF", "BusquedaDocumento");
+                }
+
+                List<string> listPdf = new List<string>();
+                string[] arrIds = strCadenaIds.Split('&');
+
+                for (int i = 0; i < arrIds.Length; i++)
+                {
+                    if (arrIds[i] != "")
+                    {
+                        int intCodigoFile = Convert.ToInt32(arrIds[i]);
+
+                        DocumentoBL objDocBL = new DocumentoBL();
+                        var objDocumentoEL = new DocumentoEL();
+                        objDocumentoEL = objDocBL.ObtenerInfoDoc(intCodigoFile, 1, 1);
+
+                        string strNombreArchivo = objDocumentoEL.NOMBRE_DOCUMENTO.Substring(objDocumentoEL.NOMBRE_DOCUMENTO.LastIndexOf(@"\") + 1);
+                        string path = objDocumentoEL.NOMBRE_DOCUMENTO;
+                        string filePath = path;
+
+                        if (System.IO.File.Exists(filePath))
+                        {
+                            listPdf.Add(filePath);
+                        }
+                    }
+                }
+
+                if (listPdf.Count > 0)
+                {
+                    using (ZipFile zip = new ZipFile())
+                    {
+                        zip.AlternateEncodingUsage = ZipOption.AsNecessary;
+                        zip.AddDirectoryByName("Files");
+                        foreach (string strPdf in listPdf)
+                        {
+                            zip.AddFile(strPdf, "Files");
+                        }
+
+                        Response.Clear();
+                        Response.BufferOutput = false;
+                        string zipName = String.Format("Zip_{0}.zip", DateTime.Now.ToString("yyyy-MMM-dd-HHmmss"));
+                        Response.ContentType = "application/zip";
+                        Response.AddHeader("content-disposition", "attachment; filename=" + zipName);
+                        zip.Save(Response.OutputStream);
+                        Response.End();
+                    }
+                }
+                else
+                {
+                    TempData["yourMessage"] = "Error al acceder al documento. (Codigo de error = 6)";
+                    return RedirectToAction("ViewErrorPDF", "BusquedaDocumento");
+                }
+            }
+            catch (Exception ex)
+            {
+                Documentos_Log.Log_WriteLog(ex.Message, typeof(DocumentoController).ToString());
+                Documentos_Log.Log_WriteLog(ex.Source, typeof(Controller).ToString());
+                Documentos_Log.Log_WriteLog(ex.StackTrace, typeof(DocumentoController).ToString());
+
+                TempData["yourMessage"] = "Acceso denegado al abrir el documento. (Codigo de error = 5)";
+                return RedirectToAction("ViewErrorPDF", "BusquedaDocumento");
+            }
+
+            Util.RegistrarAuditoria("Consulta Documento", "DescargarPDFMasivo", "Descarga de archivos correctamente", SesionActual.Current.NOMBRE_COMPLETO, SesionActual.Current.IN_CODIGO_USU);
+            string strRespuesta = "";
+            return Json(new { strRespuesta = strRespuesta });
+        }
     }
 }
+

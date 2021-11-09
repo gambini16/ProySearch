@@ -1,4 +1,5 @@
-﻿using SearchDocuments.Entidades.ImportarDocumento;
+﻿using SearchDocuments.Comunes;
+using SearchDocuments.Entidades.ImportarDocumento;
 using SearchDocuments.Negocio.ImportarDocumento;
 using SearchDocumentsSiteWeb.Controllers.Parametro;
 using SearchDocumentsSiteWeb.General;
@@ -64,8 +65,9 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
                 VolumeId = int.Parse(ConfigurationManager.AppSettings["consVolumeId"]),
                 TemplateId = intTipoPlantilla,
                 PageCount = int.Parse(ConfigurationManager.AppSettings["consPageCount"]),
-                Creator = SesionActual.Current.NOMBRE_COMPLETO,
-                Ext_File = ConfigurationManager.AppSettings["consExt_File"].ToString()
+                Creator = SesionActual.Current.VC_USUARIO_USU,
+                Ext_File = ConfigurationManager.AppSettings["consExt_File"].ToString(),
+                IsIndexed = 1
             };
 
             var tocId = objImportarDocumentoBL.fn_Insert_Update_Tbl_toc(objTBL_TOCEL);
@@ -99,12 +101,18 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
                         img_bpp = ConfigurationManager.AppSettings["consImg_bpp"].ToString()
                     };
 
-                    var result = objImportarDocumentoBL.fn_Insert_Update_Tbl_doc(objTBL_DOCEL);
 
-                    return this.Json((object)new
-                    {
-                        Value = int.Parse(result) > 0 ? result : "NOOK",
-                    }, JsonRequestBehavior.AllowGet);
+                    var result = objImportarDocumentoBL.fn_Insert_Update_Tbl_doc(objTBL_DOCEL);
+                    var resultData = new { PageId = int.Parse(result), TocId = int.Parse(tocId) };
+
+
+
+                    //Auditoria
+                    Util.RegistrarAuditoriaDS(Funciones.CheckInt(tocId), nombreArchivo, SesionActual.Current.IN_CODIGO_USU, Funciones.CheckStr(Util.EventName.Importar));
+
+
+                    return Json(resultData, JsonRequestBehavior.AllowGet);
+                    
                 }
                 else
                 {
@@ -125,7 +133,36 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
             }
         }
 
-        public JsonResult SubirPDF(HttpPostedFileBase fileUpload, int pageId)
+
+        private void update_page_count(int tocId,string strFullPath)
+        {
+            if (System.IO.File.Exists(strFullPath))
+            {
+                TBL_TOCEL objEntity = new TBL_TOCEL();
+                objEntity.TocId = tocId;
+                objEntity.PageCount = Funciones.CountPagePdf(strFullPath);
+                IImportarDocumentoBL objImportarDocumentoBL = new ImportarDocumentoBL();
+                objImportarDocumentoBL.fn_Update_Tbl_toc_PageCount(objEntity);
+            }
+        }
+        private void update_size_image(int pageId, string strFullPath)
+        {
+            if (System.IO.File.Exists(strFullPath)) {
+                FileInfo info = new FileInfo(strFullPath);
+                long length = info.Length;
+
+                TBL_DOCEL objEntity = new TBL_DOCEL();
+                objEntity.PageId = pageId;
+                objEntity.img_size = (int)length;
+                IImportarDocumentoBL objImportarDocumentoBL = new ImportarDocumentoBL();
+                objImportarDocumentoBL.fn_Update_Tbl_doc_size(objEntity);
+
+
+
+            }
+        }
+
+        public JsonResult SubirPDF(HttpPostedFileBase fileUpload, int pageId,int tocId)
         {
             try
             {
@@ -142,6 +179,8 @@ namespace SearchDocumentsSiteWeb.Controllers.Documento
                 string strFileImage = strFolderImage + hex + ".pdf";
 
                 fileUpload.SaveAs(strFileImage);
+                this.update_page_count(tocId, strFileImage);
+                this.update_size_image(pageId, strFileImage);
 
             }
             catch (Exception ex)

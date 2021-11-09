@@ -14,7 +14,7 @@ $(document).ready(function () {
             var strClaveOld = $("#htxtContrasenaOld").val();
 
             if (strClave != strValidarClave) {
-                bootbox.alert("Ambas claves deben coincidir.", null);
+                ModalAlert("Ambas claves deben coincidir.");
             }
             else {
 
@@ -26,7 +26,7 @@ $(document).ready(function () {
                     data: {
                         CodUser: strIdUser,
                         PwdOld: strClaveOld,
-                        PwdNew: strClave                        
+                        PwdNew: strClave
                     },
                     dataType: "json",
                     beforeSend: addLoading("ContenidoWeb"),
@@ -36,15 +36,15 @@ $(document).ready(function () {
                             var url = BASE_APP_URL + 'Home/Index';
                             window.location.href = url;
                         } else if (result.strRespuesta == '2') {
-                            bootbox.alert("La contraseña actual es incorrecta, vuelva a inténtalo.", null);
+                            ModalAlert("La contraseña actual es incorrecta, vuelva a inténtalo.");
                         }
-                        else
-                        {
-                            bootbox.alert("Ocurrió un error en el registro, vuelva a intentarlo.", null);
+                        else {
+                            ModalAlert("Ocurrió un error en el registro, vuelva a intentarlo.");
                         }
                     },
                     error: function () {
-                        bootbox.alert("Ocurrió un error en el registro, vuelva a intentarlo.", null);
+                        clearLoading();
+                        ModalAlert("Ocurrió un error en el registro, vuelva a intentarlo.");
                     }
                 });
             }

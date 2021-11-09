@@ -1,16 +1,13 @@
-﻿using SearchDocuments.Entidades;
+﻿using CaptchaMvc.HtmlHelpers;
+using Newtonsoft.Json;
+using SearchDocuments.Criptografia;
+using SearchDocuments.Entidades;
 using SearchDocuments.Negocio.SeguridadSistema;
 using SearchDocumentsSiteWeb.General;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using CaptchaMvc.HtmlHelpers;
-using Newtonsoft.Json;
-using SearchDocuments.Criptografia;
-using SearchDocuments.Comunes;
 
 namespace SearchDocumentsSiteWeb.Controllers
 {
@@ -51,7 +48,8 @@ namespace SearchDocumentsSiteWeb.Controllers
                 string strUrl2 = ConfigurationManager.AppSettings["UrlServer2"].ToString();
                 return Redirect(strUrl2);
             }
-            else {
+            else
+            {
                 int intRegAudit = Util.RegistrarAuditoria("Login", "Load", "Ingreso al sistema", "", 0);
 
                 RefrescarCache();
@@ -62,8 +60,8 @@ namespace SearchDocumentsSiteWeb.Controllers
             }
 
 
-                
-            
+
+
         }
 
         [HttpPost]
@@ -87,15 +85,16 @@ namespace SearchDocumentsSiteWeb.Controllers
                         ViewBag.error = "El código Captcha ingresado es incorrecto.";
                         //Auditoria
                         //Util.RegistrarAuditoria("Login", "Click", "El código Captcha ingresado es incorrecto.", users.LOGIN_USUARIO, 0);                        
-                        Util.RegistrarAuditoriaDS(null, string.Empty, 0, Util.EventName.LoginOk.ToString());
+                        Util.RegistrarAuditoriaDS(0, string.Empty, 0, Util.EventName.LoginOk.ToString());
                         return View("LoginEstandar", users);
                     }
-                    else {
+                    else
+                    {
                         ISeguridadBL objBL = new SeguridadBL();
                         Tbl_users objUsuario = new Tbl_users();
                         objUsuario = objBL.ObtenerNombreUsuario(strUsuario);
 
-                       
+
 
 
 
@@ -109,13 +108,13 @@ namespace SearchDocumentsSiteWeb.Controllers
                                     ViewBag.CountFail = intContador;
                                     break;
                                 case "0"://Usuario activo
-                                    //string strClaveEncriptada = Encriptador.Encriptar(users.LOGIN_PASSWORD);
+                                         //string strClaveEncriptada = Encriptador.Encriptar(users.LOGIN_PASSWORD);
 
                                     string strPwd = Cryptography.Decrypt(objUsuario.VC_PWD_USU, objUsuario.IN_CODIGO_USU.ToString());
                                     if (strPwd == users.LOGIN_PASSWORD)
                                     {
                                         SesionActual.Current.IN_CODIGO_PRF = objUsuario.IN_CODIGO_PRF;
-                                        SesionActual.Current.IN_CODIGO_USU = objUsuario.IN_CODIGO_USU;
+                                        SesionActual.Current.IN_CODIGO_USU = objUsuario.IN_CODIGO_USU; 
 
                                         SesionActual.Current.VC_DATAENCRY = EncryptionHelper.Encrypt(objUsuario.IN_CODIGO_USU.ToString());
 
@@ -125,16 +124,28 @@ namespace SearchDocumentsSiteWeb.Controllers
                                         SesionActual.Current.AVATAR = "";
                                         SesionActual.Current.SOCIEDAD_NOMBRE = "";
                                         SesionActual.Current.PERFIL_NOMBRE = objUsuario.NOM_PERFIL;
+                                        SesionActual.Current.VC_USUARIO_USU = objUsuario.VC_USUARIO_USU;
+
 
                                         List<OpcionEL> lstOpciones = objBL.obtenerOpcionesPerfil(objUsuario.IN_CODIGO_PRF);
                                         var json = JsonConvert.SerializeObject(lstOpciones);
                                         SesionActual.Current.OPCIONES_USUARIO = json;
                                         ViewData["OPCIONES_USUARIO"] = SesionActual.Current.OPCIONES_USUARIO;
+
+                                        #region Leer tbl_permission
+                                        var permisosParaUsuario = objBL.ObtenerPersimosUsuarioPorIdGroup(objUsuario.IN_CODIGO_PRF);
+
+                                        SesionActual.Current.IN_ESTA_VIEW = permisosParaUsuario.IsSearch == true ? 1 : 0;
+                                        SesionActual.Current.IN_ESTA_EDIT = permisosParaUsuario.IsEditDoc == true ? 1 : 0;
+                                        SesionActual.Current.IN_ESTA_ELI = permisosParaUsuario.IsDelDoc == true ? 1 : 0;
+                                        SesionActual.Current.IN_ESTA_EXPORT = permisosParaUsuario.IsExport == true ? 1 : 0;
+                                        #endregion
+
                                         /************************************/
 
                                         //Auditoria
                                         Util.RegistrarAuditoria("Login", "Click", "Ingreso al sistema Clave Correcta", objUsuario.VC_USUARIO_USU, objUsuario.IN_CODIGO_USU);
-                                        Util.RegistrarAuditoriaDS(null, string.Empty, objUsuario.IN_CODIGO_USU, Util.EventName.LoginOk.ToString());
+                                        Util.RegistrarAuditoriaDS(0, string.Empty, objUsuario.IN_CODIGO_USU, Util.EventName.LoginOk.ToString());
 
                                         return RedirectToAction("Index", "Home");
                                     }
@@ -142,7 +153,7 @@ namespace SearchDocumentsSiteWeb.Controllers
                                     {
                                         //Auditoria
                                         //Util.RegistrarAuditoria("Login", "Click", "Ingreso al sistema Clave Incorrecta", objUsuario.VC_USUARIO_USU, objUsuario.IN_CODIGO_USU);
-                                        Util.RegistrarAuditoriaDS(null, string.Empty, objUsuario.IN_CODIGO_USU, Util.EventName.LoginFailed.ToString());
+                                        Util.RegistrarAuditoriaDS(0, string.Empty, objUsuario.IN_CODIGO_USU, Util.EventName.LoginFailed.ToString());
 
                                         users.CONTADOR_INTENTOS++;
                                         ViewBag.ErrorMessage = "La contraseña ingresada es incorrecta.";
@@ -150,7 +161,7 @@ namespace SearchDocumentsSiteWeb.Controllers
                                         intContador++;
                                         ViewBag.CountFail = intContador;
 
-                                        
+
 
 
                                         if (intContador == intMaxFailLogin)
@@ -180,9 +191,9 @@ namespace SearchDocumentsSiteWeb.Controllers
 
                             //Auditoria
                             //Util.RegistrarAuditoria("Login", "Click", "El usuario ingresado es incorrecto.", users.LOGIN_USUARIO, 0);
-                            Util.RegistrarAuditoriaDS(null, string.Empty, 0, Util.EventName.LoginFailed.ToString());
+                            Util.RegistrarAuditoriaDS(0, string.Empty, 0, Util.EventName.LoginFailed.ToString());
 
-                            
+
                         }
 
                     }
